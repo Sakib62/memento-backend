@@ -1,0 +1,31 @@
+{
+  "name": "memento-backend",
+  "version": "1.0.0",
+  "description": "**Memento** is a user-friendly blogging platform designed to help you express yourself and document your thoughts. Create and publish blog posts, customize your content with media attachments, and easily organize your writing in an intuitive and clean interface.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sakib62/memento-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sakib62/memento-backend/issues"
+  },
+  "homepage": "https://github.com/Sakib62/memento-backend#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
