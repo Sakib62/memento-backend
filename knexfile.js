@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 export default {
   development: {
@@ -13,7 +13,7 @@ export default {
       port: process.env.DB_PORT,
     },
     migrations: {
-      directory: "./migrations",
+      directory: "./src/database/migrations",
     },
   },
 };
