@@ -1,9 +1,12 @@
+import bcrypt from 'bcrypt'
 import User from '../database/models/userModel';
 import UserRepository from '../repositories/userRepository';
+import AuthService from '../services/authService'
 
 class UserService {
-    static async createUser(user: User): Promise<User> {
+    static async createUser(user: User, password: string): Promise<User> {
         const newUser = await UserRepository.createUser(user);
+        await AuthService.createAuth(newUser.id, password);
         return newUser;
     }
 
