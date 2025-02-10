@@ -1,31 +1,31 @@
 import { Request, Response } from 'express';
-import UserService from '../services/userService';
 import User from '../database/models/userModel';
+import UserService from '../services/userService';
 import ResponseModel from '../utils/responseModel';
 
-class userController {
+class UserController {
     static async createUser(req: Request, res: Response): Promise<void> {
         const { password, ...user } = req.body;
         if (!user.username || !user.name || !user.email || !password) {
-            ResponseModel.send(res, 400, 'Missing required fields');
+            res.status(400).json({error: 'Missing required fields'});
             return;
         }
         try {
             const newUser = await UserService.createUser(user, password);
-            ResponseModel.send(res, 201, 'User created successfully', newUser);
+            ResponseModel.send(res, 201, newUser);
         }
         catch (error) {
-            ResponseModel.send(res, 500, error.message);
+            res.status(500).json({error: error.message});
         }
     }
 
     static async getAllUsers(req: Request, res: Response): Promise<void> {
         try {
             const users = await UserService.getAllUsers();
-            ResponseModel.send(res, 200, 'Users fetched successfully', users);
+            ResponseModel.send(res, 200, users);
         }
         catch(error) {
-            ResponseModel.send(res, 500, error.message);
+            res.status(500).json({error: error.message});
         }
     }
 
@@ -34,14 +34,14 @@ class userController {
             const userId = parseInt(req.params.id, 10);
             const user = await UserService.getUserById(userId);
             if (user) {
-                ResponseModel.send(res, 200, 'User found', user);
+                ResponseModel.send(res, 200, user);
             }
             else {
-                ResponseModel.send(res, 404, 'User not found');
+                res.status(404).json({error: 'User not found'});
             }
         }
         catch(error) {
-            ResponseModel.send(res, 500, error.message);
+            res.status(500).json({error: error.message});
         }
     }
 
@@ -50,14 +50,14 @@ class userController {
             const username = req.params.username;
             const user = await UserService.getUserByUsername(username);
             if (user) {
-                ResponseModel.send(res, 200, 'User found', user);
+                ResponseModel.send(res, 200, user);
             }
             else {
-                ResponseModel.send(res, 404, 'User not found');
+                res.status(404).json({error: 'User not found'});
             }
         }
         catch(error) {
-            ResponseModel.send(res, 500, error.message);
+            res.status(500).json({error: error.message});
         }
     }
 
@@ -67,14 +67,14 @@ class userController {
             const userUpdates: Partial<User> = req.body;
             const updatedUser = await UserService.updateUser(userId, userUpdates);
             if (updatedUser) {
-                ResponseModel.send(res, 200, 'User updated successfully', updatedUser);
+                ResponseModel.send(res, 200, updatedUser);
             }
             else {
-                ResponseModel.send(res, 404, 'User not found');
+                res.status(404).json({error: 'User not found'});
             }
         }
         catch(error) {
-            ResponseModel.send(res, 500, error.message);
+            res.status(500).json({error: error.message});
         }
     }
 
@@ -83,16 +83,16 @@ class userController {
             const userId = parseInt(req.params.id, 10);
             const isDeleted = await UserService.deleteUser(userId);
             if (isDeleted) {
-                ResponseModel.send(res, 200, 'User deleted successfully');
+                ResponseModel.send(res, 200);
             }
             else {
-                ResponseModel.send(res, 404, 'User not found');
+                res.status(404).json({error: 'User not found'});
             }
         }
         catch(error) {
-            ResponseModel.send(res, 500, error.message);
+            res.status(500).json({error: error.message});
         }
     }
 }
 
-export default userController;
+export default UserController;
