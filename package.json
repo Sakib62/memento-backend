@@ -4,6 +4,8 @@
   "description": "**Memento** is a user-friendly blogging platform designed to help you express yourself and document your thoughts. Create and publish blog posts, customize your content with media attachments, and easily organize your writing in an intuitive and clean interface.",
   "main": "index.js",
   "scripts": {
+    "format": "prettier --write .",
+    "lint": "eslint",
     "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,11 +21,18 @@
   },
   "homepage": "https://github.com/Sakib62/memento-backend#readme",
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
+    "eslint": "^9.19.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^15.14.0",
     "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.23.0"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
