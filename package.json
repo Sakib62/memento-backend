@@ -19,14 +19,18 @@
   },
   "homepage": "https://github.com/Sakib62/memento-backend#readme",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "js2xmlparser": "^5.0.0",
+    "json-to-plain-text": "^1.1.4",
     "knex": "^3.1.0",
     "pg": "^8.13.1"
   }
