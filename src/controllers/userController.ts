@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import User from '../database/models/userModel';
+import CreateUserDTO from '../dtos/createUserDTO';
+import UpdateUserDTO from '../dtos/updateUserDTO';
 import UserService from '../services/userService';
 import { NotFoundError, ValidationError } from '../utils/errorClass';
 import ResponseModel from '../utils/responseModel';
@@ -10,13 +11,13 @@ class UserController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { password, ...user } = req.body;
-    if (!user.username || !user.name || !user.email || !password) {
+    const user: CreateUserDTO = req.body;
+    if (!user.username || !user.name || !user.email || !user.password) {
       next(new ValidationError());
       return;
     }
     try {
-      const newUser = await UserService.createUser(user, password);
+      const newUser = await UserService.createUser(user);
       ResponseModel.send(res, 201, newUser);
     } catch (error) {
       next(error);
@@ -79,7 +80,7 @@ class UserController {
   ): Promise<void> {
     try {
       const userId = parseInt(req.params.id, 10);
-      const userUpdates: Partial<User> = req.body;
+      const userUpdates: Partial<UpdateUserDTO> = req.body;
       const updatedUser = await UserService.updateUser(userId, userUpdates);
       if (updatedUser) {
         ResponseModel.send(res, 200, updatedUser);
