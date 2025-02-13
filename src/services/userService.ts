@@ -1,35 +1,39 @@
-import User from '../database/models/userModel';
+import CreateUserDTO from '../dtos/createUserDTO';
+import UpdateUserDTO from '../dtos/updateUserDTO';
+import UserDTO from '../dtos/userDTO';
 import UserRepository from '../repositories/userRepository';
 import AuthService from '../services/authService';
+import mapToUserDTO from '../utils/userMapper';
 
 class UserService {
-  static async createUser(user: User, password: string): Promise<User> {
-    const newUser = await UserRepository.createUser(user);
+  static async createUser(user: CreateUserDTO): Promise<UserDTO> {
+    const { password, ...userWithoutPassword } = user;
+    const newUser = await UserRepository.createUser(userWithoutPassword);
     await AuthService.createAuth(newUser.id, password);
-    return newUser;
+    return mapToUserDTO(newUser);
   }
 
-  static async getAllUsers(): Promise<User[]> {
+  static async getAllUsers(): Promise<UserDTO[]> {
     const users = await UserRepository.getAllUsers();
-    return users;
+    return users.map(mapToUserDTO);
   }
 
-  static async getUserById(userId: number): Promise<User | undefined> {
+  static async getUserById(userId: number): Promise<UserDTO | null> {
     const user = await UserRepository.getUserById(userId);
-    return user;
+    return user ? mapToUserDTO(user) : null;
   }
 
-  static async getUserByUsername(username: string): Promise<User | undefined> {
+  static async getUserByUsername(username: string): Promise<UserDTO | null> {
     const user = await UserRepository.getUserByUsername(username);
-    return user;
+    return user ? mapToUserDTO(user) : null;
   }
 
   static async updateUser(
     userId: number,
-    user: Partial<User>
-  ): Promise<User | undefined> {
+    user: Partial<UpdateUserDTO>
+  ): Promise<UserDTO | null> {
     const updatedUser = await UserRepository.updateUser(userId, user);
-    return updatedUser;
+    return updatedUser ? mapToUserDTO(updatedUser) : null;
   }
 
   static async deleteUser(userId: number): Promise<boolean> {
