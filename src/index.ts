@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import errorHandler from './middlewares/errorHandler';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoute';
 
@@ -16,6 +17,8 @@ const port = process.env.PORT || 3000;
 app.get('/', (req, res) => {
   res.send('API is working!');
 });
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
