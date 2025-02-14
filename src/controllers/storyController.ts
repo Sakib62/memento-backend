@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO';
 import StoryService from '../services/storyService';
-import { NotFoundError, ValidationError } from '../utils/errorClass';
+import { ValidationError } from '../utils/errorClass';
 import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
 
@@ -49,11 +49,7 @@ class StoryController {
     const storyId = parseInt(req.params.id, 10);
     try {
       const story = await StoryService.getStoryById(storyId);
-      if (story) {
-        ResponseModel.send(res, HttpStatus.OK, story);
-      } else {
-        next(new NotFoundError());
-      }
+      ResponseModel.send(res, HttpStatus.OK, story);
     } catch (error) {
       next(error);
     }
@@ -71,11 +67,7 @@ class StoryController {
         storyId,
         storyUpdates
       );
-      if (updatedStory) {
-        ResponseModel.send(res, HttpStatus.OK, updatedStory);
-      } else {
-        next(new NotFoundError());
-      }
+      ResponseModel.send(res, HttpStatus.OK, updatedStory);
     } catch (error) {
       next(error);
     }
@@ -88,12 +80,8 @@ class StoryController {
   ): Promise<void> {
     const storyId = parseInt(req.params.id, 10);
     try {
-      const isDeleted = await StoryService.deleteStory(storyId);
-      if (isDeleted) {
-        ResponseModel.send(res, HttpStatus.OK);
-      } else {
-        next(new NotFoundError());
-      }
+      await StoryService.deleteStory(storyId);
+      ResponseModel.send(res, HttpStatus.OK);
     } catch (error) {
       next(error);
     }
