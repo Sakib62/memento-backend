@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import CreateUserDTO from '../dtos/createUserDTO';
 import UpdateUserDTO from '../dtos/updateUserDTO';
 import UserService from '../services/userService';
-import { NotFoundError, ValidationError } from '../utils/errorClass';
+import { ValidationError } from '../utils/errorClass';
+import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
 
 class UserController {
@@ -18,7 +19,7 @@ class UserController {
     }
     try {
       const newUser = await UserService.createUser(user);
-      ResponseModel.send(res, 201, newUser);
+      ResponseModel.send(res, HttpStatus.CREATED, newUser);
     } catch (error) {
       next(error);
     }
@@ -31,7 +32,7 @@ class UserController {
   ): Promise<void> {
     try {
       const users = await UserService.getAllUsers();
-      ResponseModel.send(res, 200, users);
+      ResponseModel.send(res, HttpStatus.OK, users);
     } catch (error) {
       next(error);
     }
@@ -45,11 +46,7 @@ class UserController {
     try {
       const userId = parseInt(req.params.id, 10);
       const user = await UserService.getUserById(userId);
-      if (user) {
-        ResponseModel.send(res, 200, user);
-      } else {
-        next(new NotFoundError());
-      }
+      ResponseModel.send(res, HttpStatus.OK, user);
     } catch (error) {
       next(error);
     }
@@ -63,11 +60,7 @@ class UserController {
     try {
       const username = req.params.username;
       const user = await UserService.getUserByUsername(username);
-      if (user) {
-        ResponseModel.send(res, 200, user);
-      } else {
-        next(new NotFoundError());
-      }
+      ResponseModel.send(res, HttpStatus.OK, user);
     } catch (error) {
       next(error);
     }
@@ -82,11 +75,7 @@ class UserController {
       const userId = parseInt(req.params.id, 10);
       const userUpdates: Partial<UpdateUserDTO> = req.body;
       const updatedUser = await UserService.updateUser(userId, userUpdates);
-      if (updatedUser) {
-        ResponseModel.send(res, 200, updatedUser);
-      } else {
-        next(new NotFoundError());
-      }
+      ResponseModel.send(res, HttpStatus.OK, updatedUser);
     } catch (error) {
       next(error);
     }
@@ -99,12 +88,8 @@ class UserController {
   ): Promise<void> {
     try {
       const userId = parseInt(req.params.id, 10);
-      const isDeleted = await UserService.deleteUser(userId);
-      if (isDeleted) {
-        ResponseModel.send(res, 200);
-      } else {
-        next(new NotFoundError());
-      }
+      await UserService.deleteUser(userId);
+      ResponseModel.send(res, HttpStatus.OK);
     } catch (error) {
       next(error);
     }

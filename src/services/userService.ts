@@ -3,6 +3,7 @@ import UpdateUserDTO from '../dtos/updateUserDTO';
 import UserDTO from '../dtos/userDTO';
 import UserRepository from '../repositories/userRepository';
 import AuthService from '../services/authService';
+import { NotFoundError } from '../utils/errorClass';
 import mapToUserDTO from '../utils/userMapper';
 
 class UserService {
@@ -20,11 +21,17 @@ class UserService {
 
   static async getUserById(userId: number): Promise<UserDTO | null> {
     const user = await UserRepository.getUserById(userId);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
     return user ? mapToUserDTO(user) : null;
   }
 
   static async getUserByUsername(username: string): Promise<UserDTO | null> {
     const user = await UserRepository.getUserByUsername(username);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
     return user ? mapToUserDTO(user) : null;
   }
 
@@ -33,11 +40,17 @@ class UserService {
     user: Partial<UpdateUserDTO>
   ): Promise<UserDTO | null> {
     const updatedUser = await UserRepository.updateUser(userId, user);
+    if (!updatedUser) {
+      throw new NotFoundError('User not found');
+    }
     return updatedUser ? mapToUserDTO(updatedUser) : null;
   }
 
   static async deleteUser(userId: number): Promise<boolean> {
     const idDeleted = await UserRepository.deleteUser(userId);
+    if (!idDeleted) {
+      throw new NotFoundError('User not found');
+    }
     return idDeleted;
   }
 }
