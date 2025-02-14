@@ -25,8 +25,9 @@ class AuthService {
 
     const token = jwt.sign(
       { username: user.username, name: user.name, role: user.role },
-      process.env.JWT_SECRET_KEY,
-      { expiresIn: parseInt(process.env.JWT_EXPIRY) }
+      process.env.JWT_SECRET_KEY as string,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { expiresIn: process.env.JWT_EXPIRY as any }
     );
     return token;
   }

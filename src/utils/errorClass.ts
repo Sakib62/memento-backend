@@ -32,3 +32,9 @@ export class UnauthorizedError extends AppError {
     super(message || 'Unauthorized access', HttpStatus.UNAUTHORIZED);
   }
 }
+
+export class ForbiddenError extends AppError {
+  constructor(message?: string) {
+    super(message || 'Permission denied', HttpStatus.FORBIDDEN);
+  }
+}
