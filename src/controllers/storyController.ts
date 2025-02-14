@@ -34,7 +34,9 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const stories = await StoryService.getAllStories();
+      const limit = Number(req.query.limit) || 10;
+      const offset = Number(req.query.offset) || 0;
+      const stories = await StoryService.getAllStories(limit, offset);
       ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);

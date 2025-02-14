@@ -31,7 +31,9 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users = await UserService.getAllUsers();
+      const limit = Number(req.query.limit) || 10;
+      const offset = Number(req.query.offset) || 0;
+      const users = await UserService.getAllUsers(limit, offset);
       ResponseModel.send(res, HttpStatus.OK, users);
     } catch (error) {
       next(error);
