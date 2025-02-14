@@ -46,8 +46,8 @@ class StoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const storyId = parseInt(req.params.id, 10);
     try {
+      const storyId = parseInt(req.params.id, 10);
       const story = await StoryService.getStoryById(storyId);
       ResponseModel.send(res, HttpStatus.OK, story);
     } catch (error) {
@@ -60,9 +60,9 @@ class StoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const storyId = parseInt(req.params.id, 10);
-    const storyUpdates: UpdateStoryDTO = req.body;
     try {
+      const storyId = parseInt(req.params.id, 10);
+      const storyUpdates: UpdateStoryDTO = req.body;
       const updatedStory = await StoryService.updateStory(
         storyId,
         storyUpdates
@@ -78,8 +78,8 @@ class StoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const storyId = parseInt(req.params.id, 10);
     try {
+      const storyId = parseInt(req.params.id, 10);
       await StoryService.deleteStory(storyId);
       ResponseModel.send(res, HttpStatus.OK);
     } catch (error) {
