@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import AuthService from '../services/authService';
+import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
 
 class AuthController {
@@ -11,7 +12,7 @@ class AuthController {
     try {
       const { identifier, password } = req.body;
       const token = await AuthService.login(identifier, password);
-      ResponseModel.send(res, 200, { token });
+      ResponseModel.send(res, HttpStatus.OK, { token });
     } catch (error) {
       next(error);
     }

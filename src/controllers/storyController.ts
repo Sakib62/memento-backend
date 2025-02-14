@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO';
 import StoryService from '../services/storyService';
 import { NotFoundError, ValidationError } from '../utils/errorClass';
+import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
 
 class StoryController {
@@ -21,7 +22,7 @@ class StoryController {
     }
     try {
       const newStory = await StoryService.createStory(storyData);
-      ResponseModel.send(res, 201, newStory);
+      ResponseModel.send(res, HttpStatus.CREATED, newStory);
     } catch (error) {
       next(error);
     }
@@ -34,7 +35,7 @@ class StoryController {
   ): Promise<void> {
     try {
       const stories = await StoryService.getAllStories();
-      ResponseModel.send(res, 200, stories);
+      ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);
     }
@@ -49,7 +50,7 @@ class StoryController {
     try {
       const story = await StoryService.getStoryById(storyId);
       if (story) {
-        ResponseModel.send(res, 200, story);
+        ResponseModel.send(res, HttpStatus.OK, story);
       } else {
         next(new NotFoundError());
       }
@@ -71,7 +72,7 @@ class StoryController {
         storyUpdates
       );
       if (updatedStory) {
-        ResponseModel.send(res, 200, updatedStory);
+        ResponseModel.send(res, HttpStatus.OK, updatedStory);
       } else {
         next(new NotFoundError());
       }
@@ -89,7 +90,7 @@ class StoryController {
     try {
       const isDeleted = await StoryService.deleteStory(storyId);
       if (isDeleted) {
-        ResponseModel.send(res, 200);
+        ResponseModel.send(res, HttpStatus.OK);
       } else {
         next(new NotFoundError());
       }

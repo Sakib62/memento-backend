@@ -1,3 +1,5 @@
+import { HttpStatus } from '../utils/httpStatus';
+
 export class AppError extends Error {
   statusCode: number;
   status: 'fail' | 'error';
@@ -15,18 +17,18 @@ export class AppError extends Error {
 
 export class NotFoundError extends AppError {
   constructor(message?: string) {
-    super(message || 'Resource Not Found', 404);
+    super(message || 'Resource Not Found', HttpStatus.NOT_FOUND);
   }
 }
 
 export class ValidationError extends AppError {
   constructor(message?: string) {
-    super(message || 'Validation Failed', 400);
+    super(message || 'Validation Failed', HttpStatus.BAD_REQUEST);
   }
 }
 
 export class UnauthorizedError extends AppError {
   constructor(message?: string) {
-    super(message || 'Unauthorized access', 401);
+    super(message || 'Unauthorized access', HttpStatus.UNAUTHORIZED);
   }
 }
