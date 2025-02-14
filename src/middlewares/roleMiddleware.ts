@@ -10,19 +10,19 @@ export const userRoleMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   const user = req.user;
-  if (user.role == 1) {
+  const isAdmin = user.role === 1;
+  if (isAdmin) {
     return next();
   }
-  if (req.params.username) {
-    if (user.username != req.params.username) {
+  const { username, id } = req.params;
+  if (username) {
+    if (user.username !== username) {
       throw new ForbiddenError();
     }
-  } else if (req.params.id) {
+  } else if (id) {
     try {
-      const fetchedUser = await UserService.getUserById(
-        parseInt(req.params.id, 10)
-      );
-      if (!fetchedUser || user.username != fetchedUser.username) {
+      const fetchedUser = await UserService.getUserById(parseInt(id, 10));
+      if (!fetchedUser || user.username !== fetchedUser.username) {
         throw new ForbiddenError();
       }
     } catch (error) {
@@ -39,18 +39,20 @@ export const storyRoleMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   const user = req.user;
-  if (user.role == 1) {
+  const isAdmin = user.role === 1;
+  if (isAdmin) {
     return next();
   }
   try {
     const fetchedStory = await StoryService.getStoryById(
       parseInt(req.params.id, 10)
     );
-    if (!fetchedStory || user.username != fetchedStory.authorUsername) {
+    if (!fetchedStory || user.username !== fetchedStory.authorUsername) {
       throw new ForbiddenError();
     }
     return next();
   } catch (error) {
     next(error);
+    return;
   }
 };

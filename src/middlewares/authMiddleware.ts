@@ -16,6 +16,9 @@ export const authMiddleware = (
     throw new UnauthorizedError();
   }
   const token = authHeader.split(' ')[1];
+  if (!token) {
+    throw new UnauthorizedError();
+  }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
     req.user = decoded as AuthRequest['user'];
