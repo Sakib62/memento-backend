@@ -37,6 +37,7 @@ class StoryController {
       const DEFAULT_LIMIT = 10;
       const MAX_LIMIT = 100;
       const DEFAULT_OFFSET = 0;
+      const MAX_OFFSET = 1000;
       const limit =
         req.query.limit !== undefined ? Number(req.query.limit) : DEFAULT_LIMIT;
       const offset =
@@ -48,8 +49,10 @@ class StoryController {
           `Limit must be a positive integer between 1 and ${MAX_LIMIT}.`
         );
       }
-      if (!Number.isInteger(offset) || offset < 0) {
-        throw new ValidationError('Offset must be a non-negative integer.');
+      if (!Number.isInteger(offset) || offset < 0 || offset > MAX_OFFSET) {
+        throw new ValidationError(
+          'Offset must be a integer between 0 and ${MAX_OFFSET}.'
+        );
       }
       const stories = await StoryService.getAllStories(limit, offset);
       ResponseModel.send(res, HttpStatus.OK, stories);
