@@ -1,19 +1,23 @@
 import { Router } from 'express';
 import userController from '../controllers/userController';
+import { authMiddleware } from '../middlewares/authMiddleware';
+import { userRoleMiddleware } from '../middlewares/roleMiddleware';
 
 const router = Router();
 
 router
   .route('/')
   .post(userController.createUser)
-  .get(userController.getAllUsers);
+  .get(authMiddleware, userController.getAllUsers);
 
 router
   .route('/:id')
-  .get(userController.getUserById)
-  .put(userController.updateUser)
-  .delete(userController.deleteUser);
+  .get(authMiddleware, userController.getUserById)
+  .put(authMiddleware, userRoleMiddleware, userController.updateUser)
+  .delete(authMiddleware, userRoleMiddleware, userController.deleteUser);
 
-router.route('/username/:username').get(userController.getUserByUsername);
+router
+  .route('/username/:username')
+  .get(authMiddleware, userController.getUserByUsername);
 
 export default router;
