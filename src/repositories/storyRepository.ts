@@ -7,8 +7,8 @@ class StoryRepository {
     return newStory;
   }
 
-  static async getAllStories(): Promise<Story[]> {
-    const stories = await db('stories').select('*');
+  static async getAllStories(limit: number, offset: number): Promise<Story[]> {
+    const stories = await db('stories').select('*').limit(limit).offset(offset);
     return stories;
   }
 

@@ -31,7 +31,27 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users = await UserService.getAllUsers();
+      const DEFAULT_LIMIT = 10;
+      const MAX_LIMIT = 100;
+      const DEFAULT_OFFSET = 0;
+      const MAX_OFFSET = 1000;
+      const limit =
+        req.query.limit !== undefined ? Number(req.query.limit) : DEFAULT_LIMIT;
+      const offset =
+        req.query.offset !== undefined
+          ? Number(req.query.offset)
+          : DEFAULT_OFFSET;
+      if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
+        throw new ValidationError(
+          `Limit must be a positive integer between 1 and ${MAX_LIMIT}.`
+        );
+      }
+      if (!Number.isInteger(offset) || offset < 0 || offset > MAX_OFFSET) {
+        throw new ValidationError(
+          'Offset must be a integer between 0 and ${MAX_OFFSET}.'
+        );
+      }
+      const users = await UserService.getAllUsers(limit, offset);
       ResponseModel.send(res, HttpStatus.OK, users);
     } catch (error) {
       next(error);

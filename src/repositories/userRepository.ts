@@ -7,17 +7,17 @@ class UserRepository {
     return newUser;
   }
 
-  static async getAllUsers(): Promise<User[]> {
-    const users = await db('users').select('*');
+  static async getAllUsers(limit: number, offset: number): Promise<User[]> {
+    const users = await db('users').select('*').limit(limit).offset(offset);
     return users;
   }
 
-  static async getUserById(userId: number): Promise<User | undefined> {
+  static async getUserById(userId: number): Promise<User | null> {
     const user = await db('users').where({ id: userId }).first();
     return user;
   }
 
-  static async getUserByUsername(username: string): Promise<User | undefined> {
+  static async getUserByUsername(username: string): Promise<User | null> {
     const user = await db('users').where({ username: username }).first();
     return user;
   }
@@ -25,7 +25,7 @@ class UserRepository {
   static async updateUser(
     userId: number,
     user: Partial<User>
-  ): Promise<User | undefined> {
+  ): Promise<User | null> {
     const [updatedUser] = await db('users')
       .where({ id: userId })
       .update(user)

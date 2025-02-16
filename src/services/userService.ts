@@ -14,8 +14,8 @@ class UserService {
     return mapToUserDTO(newUser);
   }
 
-  static async getAllUsers(): Promise<UserDTO[]> {
-    const users = await UserRepository.getAllUsers();
+  static async getAllUsers(limit: number, offset: number): Promise<UserDTO[]> {
+    const users = await UserRepository.getAllUsers(limit, offset);
     return users.map(mapToUserDTO);
   }
 

@@ -20,8 +20,8 @@ class StoryService {
     return newStory;
   }
 
-  static async getAllStories(): Promise<Story[]> {
-    const stories = await StoryRepository.getAllStories();
+  static async getAllStories(limit: number, offset: number): Promise<Story[]> {
+    const stories = await StoryRepository.getAllStories(limit, offset);
     return stories;
   }
 
