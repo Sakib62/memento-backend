@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import StoryController from '../../controllers/storyController';
+import { AuthRequest } from '../../middlewares/authMiddleware';
 import StoryService from '../../services/storyService';
 import { ValidationError } from '../../utils/errorClass';
 import { HttpStatus } from '../../utils/httpStatus';
@@ -11,7 +12,7 @@ jest.mock('../../utils/responseModel', () => ({
 }));
 
 describe('StoryController', () => {
-  let req: Partial<Request>;
+  let req: Partial<AuthRequest>;
   let res: Partial<Response>;
   let next: jest.Mock;
 
@@ -28,19 +29,30 @@ describe('StoryController', () => {
     req.body = {
       title: 'Story 1',
       description: 'Desc',
-      authorUsername: 'user1',
     };
+
+    req.user = { username: 'User1', name: 'User', role: 1 };
 
     const mockStory = {
       id: 1,
       title: 'Story 1',
       description: 'Desc',
+      authorUsername: 'user1',
+      authorName: 'User',
     };
     (StoryService.createStory as jest.Mock).mockResolvedValue(mockStory);
 
-    await StoryController.createStory(req as Request, res as Response, next);
+    await StoryController.createStory(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
-    expect(StoryService.createStory).toHaveBeenCalledWith(req.body);
+    expect(StoryService.createStory).toHaveBeenCalledWith({
+      ...req.body,
+      authorUsername: req.user.username,
+      authorName: req.user.name,
+    });
     expect(ResponseModel.send).toHaveBeenCalledWith(
       res,
       HttpStatus.CREATED,
@@ -49,8 +61,12 @@ describe('StoryController', () => {
   });
 
   test('createStory - should call next with ValidationError if fields are missing', async () => {
-    req.body = { title: '', description: '', authorUsername: '' };
-    await StoryController.createStory(req as Request, res as Response, next);
+    req.body = { title: '', description: '' };
+    await StoryController.createStory(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(next).toHaveBeenCalledWith(new ValidationError());
   });
@@ -61,7 +77,11 @@ describe('StoryController', () => {
     const mockStories = [{ id: 1, title: 'Story 1', description: 'Desc' }];
     (StoryService.getAllStories as jest.Mock).mockResolvedValue(mockStories);
 
-    await StoryController.getAllStories(req as Request, res as Response, next);
+    await StoryController.getAllStories(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(StoryService.getAllStories).toHaveBeenCalledWith(10, 0);
     expect(ResponseModel.send).toHaveBeenCalledWith(
@@ -73,7 +93,11 @@ describe('StoryController', () => {
 
   test('getAllStories - should return ValidationError if limit is invalid', async () => {
     req.query = { limit: '-1', offset: '0' };
-    await StoryController.getAllStories(req as Request, res as Response, next);
+    await StoryController.getAllStories(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(next).toHaveBeenCalledWith(
       new ValidationError('Limit must be a positive integer between 1 and 100.')
@@ -82,7 +106,11 @@ describe('StoryController', () => {
 
   test('getAllStories - should return ValidationError if offset is invalid', async () => {
     req.query = { limit: '10', offset: '1001' };
-    await StoryController.getAllStories(req as Request, res as Response, next);
+    await StoryController.getAllStories(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(next).toHaveBeenCalledWith(
       new ValidationError('Offset must be a integer between 0 and 1000.')
@@ -95,7 +123,11 @@ describe('StoryController', () => {
     const mockStory = { id: 1, title: 'Story 1', description: 'Desc' };
     (StoryService.getStoryById as jest.Mock).mockResolvedValue(mockStory);
 
-    await StoryController.getStoryById(req as Request, res as Response, next);
+    await StoryController.getStoryById(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(StoryService.getStoryById).toHaveBeenCalledWith(1);
     expect(ResponseModel.send).toHaveBeenCalledWith(
@@ -116,7 +148,11 @@ describe('StoryController', () => {
     };
     (StoryService.updateStory as jest.Mock).mockResolvedValue(mockUpdatedStory);
 
-    await StoryController.updateStory(req as Request, res as Response, next);
+    await StoryController.updateStory(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(StoryService.updateStory).toHaveBeenCalledWith(1, req.body);
     expect(ResponseModel.send).toHaveBeenCalledWith(
@@ -130,7 +166,11 @@ describe('StoryController', () => {
     req.params = { id: '1' };
     (StoryService.deleteStory as jest.Mock).mockResolvedValue(true);
 
-    await StoryController.deleteStory(req as Request, res as Response, next);
+    await StoryController.deleteStory(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
 
     expect(StoryService.deleteStory).toHaveBeenCalledWith(1);
     expect(ResponseModel.send).toHaveBeenCalledWith(res, HttpStatus.OK);

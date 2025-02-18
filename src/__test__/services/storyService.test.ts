@@ -1,17 +1,17 @@
-import { CreateStoryDTO, UpdateStoryDTO } from '../../dtos/storyDTO';
+import Story from '../../database/models/storyModel';
+import { UpdateStoryDTO } from '../../dtos/storyDTO';
 import StoryRepository from '../../repositories/storyRepository';
-import UserRepository from '../../repositories/userRepository';
 import StoryService from '../../services/storyService';
-import { NotFoundError, ValidationError } from '../../utils/errorClass';
+import { NotFoundError } from '../../utils/errorClass';
 
 jest.mock('../../repositories/storyRepository');
-jest.mock('../../repositories/userRepository');
 
 describe('StoryService', () => {
-  const mockStoryData: CreateStoryDTO = {
+  const mockStoryData: Story = {
     title: 'Test Story',
     description: 'Test Description',
-    authorUsername: 'testuser',
+    authorUsername: 'Test User1',
+    authorName: 'Test User',
   };
 
   const mockUpdatedStoryData: UpdateStoryDTO = {
@@ -19,44 +19,28 @@ describe('StoryService', () => {
     description: 'Updated Description',
   };
 
-  const mockUser = {
-    name: 'Test User',
-    username: 'testuser',
-    email: 'testuser@example.com',
-  };
-
   const storyRepository = StoryRepository as jest.Mocked<
     typeof StoryRepository
   >;
-  const userRepository = UserRepository as jest.Mocked<typeof UserRepository>;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('createStory - should create a story and return it', async () => {
-    userRepository.getUserByUsername.mockResolvedValue(mockUser);
-    const mockNewStory = { ...mockStoryData, authorName: mockUser.name };
+    const mockNewStory = {
+      id: 1,
+      title: 'Test Story',
+      description: 'Test Description',
+      authorUsername: 'Test User 1',
+      authorName: 'Test User',
+    };
     storyRepository.createStory.mockResolvedValue(mockNewStory);
 
     const result = await StoryService.createStory(mockStoryData);
 
-    expect(userRepository.getUserByUsername).toHaveBeenCalledWith(
-      mockStoryData.authorUsername
-    );
-    expect(storyRepository.createStory).toHaveBeenCalledWith({
-      ...mockStoryData,
-      authorName: mockUser.name,
-    });
+    expect(storyRepository.createStory).toHaveBeenCalledWith(mockStoryData);
     expect(result).toEqual(mockNewStory);
-  });
-
-  test('createStory - should throw ValidationError if user is not found', async () => {
-    userRepository.getUserByUsername.mockResolvedValue(null);
-
-    await expect(StoryService.createStory(mockStoryData)).rejects.toThrow(
-      ValidationError
-    );
   });
 
   test('getAllStories - should return a list of stories', async () => {

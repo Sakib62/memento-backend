@@ -1,5 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO';
+import { AuthRequest } from '../middlewares/authMiddleware';
 import StoryService from '../services/storyService';
 import { ValidationError } from '../utils/errorClass';
 import { HttpStatus } from '../utils/httpStatus';
@@ -7,21 +8,24 @@ import ResponseModel from '../utils/responseModel';
 
 class StoryController {
   static async createStory(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const storyData: CreateStoryDTO = req.body;
-    if (
-      !storyData.title ||
-      !storyData.description ||
-      !storyData.authorUsername
-    ) {
+    const { title, description }: CreateStoryDTO = req.body;
+    if (!title || !description) {
       next(new ValidationError());
       return;
     }
     try {
-      const newStory = await StoryService.createStory(storyData);
+      const user = req.user;
+      const storyPayload = {
+        title,
+        description,
+        authorUsername: user.username,
+        authorName: user.name,
+      };
+      const newStory = await StoryService.createStory(storyPayload);
       ResponseModel.send(res, HttpStatus.CREATED, newStory);
     } catch (error) {
       next(error);
@@ -29,7 +33,7 @@ class StoryController {
   }
 
   static async getAllStories(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -62,7 +66,7 @@ class StoryController {
   }
 
   static async getStoryById(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -76,7 +80,7 @@ class StoryController {
   }
 
   static async updateStory(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -94,7 +98,7 @@ class StoryController {
   }
 
   static async deleteStory(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
