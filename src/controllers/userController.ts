@@ -48,7 +48,7 @@ class UserController {
       }
       if (!Number.isInteger(offset) || offset < 0 || offset > MAX_OFFSET) {
         throw new ValidationError(
-          'Offset must be a integer between 0 and ${MAX_OFFSET}.'
+          `Offset must be a integer between 0 and ${MAX_OFFSET}.`
         );
       }
       const users = await UserService.getAllUsers(limit, offset);

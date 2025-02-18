@@ -1,22 +1,11 @@
 import Story from '../database/models/storyModel';
-import { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO';
+import { UpdateStoryDTO } from '../dtos/storyDTO';
 import StoryRepository from '../repositories/storyRepository';
-import UserRepository from '../repositories/userRepository';
-import { NotFoundError, ValidationError } from '../utils/errorClass';
+import { NotFoundError } from '../utils/errorClass';
 
 class StoryService {
-  static async createStory(storyData: CreateStoryDTO): Promise<Story> {
-    const user = await UserRepository.getUserByUsername(
-      storyData.authorUsername
-    );
-    if (!user) {
-      throw new ValidationError();
-    }
-    const authorName = user.name;
-    const newStory = await StoryRepository.createStory({
-      ...storyData,
-      authorName,
-    });
+  static async createStory(storyPayload: Story): Promise<Story> {
+    const newStory = await StoryRepository.createStory(storyPayload);
     return newStory;
   }
 
