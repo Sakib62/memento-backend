@@ -22,6 +22,20 @@ class UserRepository {
     return user;
   }
 
+  static async getUserByEmail(email: string): Promise<User | null> {
+    const user = await db('users').where({ email }).first();
+    return user;
+  }
+
+  static async findUserByIdentifier(identifier: string): Promise<User | null> {
+    const query = db('users')
+      .where('username', identifier)
+      .orWhere('email', identifier)
+      .first();
+
+    return query;
+  }
+
   static async updateUser(
     userId: number,
     user: Partial<User>

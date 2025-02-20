@@ -3,13 +3,32 @@ import UpdateUserDTO from '../dtos/updateUserDTO';
 import UserDTO from '../dtos/userDTO';
 import UserRepository from '../repositories/userRepository';
 import AuthService from '../services/authService';
-import { NotFoundError } from '../utils/errorClass';
+import { NotFoundError, ValidationError } from '../utils/errorClass';
 import mapToUserDTO from '../utils/userMapper';
 
 class UserService {
   static async createUser(user: CreateUserDTO): Promise<UserDTO> {
-    const { password, ...userWithoutPassword } = user;
-    const newUser = await UserRepository.createUser(userWithoutPassword);
+    const { username, email, name, password } = user;
+
+    const normalizedUsername = username.toLowerCase();
+    const normalizedEmail = email.toLowerCase();
+
+    const existingUser =
+      await UserRepository.getUserByUsername(normalizedUsername);
+    if (existingUser) {
+      throw new ValidationError('Username already exists');
+    }
+
+    const existingEmail = await UserRepository.getUserByEmail(normalizedEmail);
+    if (existingEmail) {
+      throw new ValidationError('Email already exists');
+    }
+
+    const newUser = await UserRepository.createUser({
+      username: normalizedUsername,
+      email: normalizedEmail,
+      name,
+    });
     await AuthService.createAuth(newUser.id, password);
     return mapToUserDTO(newUser);
   }
