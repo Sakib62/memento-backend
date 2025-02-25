@@ -2,6 +2,7 @@ import Story from '../database/models/storyModel';
 import { UpdateStoryDTO } from '../dtos/storyDTO';
 import StoryRepository from '../repositories/storyRepository';
 import { NotFoundError } from '../utils/errorClass';
+import UserService from './userService';
 
 class StoryService {
   static async createStory(storyPayload: Story): Promise<Story> {
@@ -20,6 +21,16 @@ class StoryService {
       throw new NotFoundError('Story not found');
     }
     return story;
+  }
+
+  static async getStoriesByAuthorUsername(
+    username: string
+  ): Promise<Story[] | null> {
+    const normalizedUsername = username.toLowerCase();
+    await UserService.getUserByUsername(normalizedUsername);
+    const stories =
+      await StoryRepository.getStoriesByAuthorUsername(normalizedUsername);
+    return stories;
   }
 
   static async updateStory(

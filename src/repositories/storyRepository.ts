@@ -17,6 +17,13 @@ class StoryRepository {
     return story;
   }
 
+  static async getStoriesByAuthorUsername(
+    authorUsername: string
+  ): Promise<Story[] | null> {
+    const stories = await db('stories').where('authorUsername', authorUsername);
+    return stories;
+  }
+
   static async updateStory(
     storyId: number,
     storyData: Partial<Story>

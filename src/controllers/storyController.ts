@@ -79,6 +79,20 @@ class StoryController {
     }
   }
 
+  static async getStoriesByAuthorUsername(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const username = req.params.username;
+      const stories = await StoryService.getStoriesByAuthorUsername(username);
+      ResponseModel.send(res, HttpStatus.OK, stories);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async updateStory(
     req: AuthRequest,
     res: Response,

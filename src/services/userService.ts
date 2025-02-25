@@ -47,7 +47,7 @@ class UserService {
   }
 
   static async getUserByUsername(username: string): Promise<UserDTO | null> {
-    const normalizedUsername = username.toLocaleLowerCase();
+    const normalizedUsername = username.toLowerCase();
     const user = await UserRepository.getUserByUsername(normalizedUsername);
     if (!user) {
       throw new NotFoundError('User not found');
@@ -56,7 +56,7 @@ class UserService {
   }
 
   static async getUserByEmail(email: string): Promise<UserDTO | null> {
-    const normalizedEmail = email.toLocaleLowerCase();
+    const normalizedEmail = email.toLowerCase();
     const user = await UserRepository.getUserByEmail(normalizedEmail);
     if (!user) {
       throw new NotFoundError('User not found');
