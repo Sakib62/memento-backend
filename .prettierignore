@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+coverage/
+*.min.js
+*.bundle.js
+.env
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+.eslintignore
+.eslintrc*
+eslint.config.mjs
+nodemon.json
