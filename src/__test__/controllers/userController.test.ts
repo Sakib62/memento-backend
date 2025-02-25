@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { ValidationError } from '../../utils/errorClass';
 import UserController from '../../controllers/userController';
 import UserService from '../../services/userService';
+import { ValidationError } from '../../utils/errorClass';
 import { HttpStatus } from '../../utils/httpStatus';
 import ResponseModel from '../../utils/responseModel';
 
@@ -22,33 +22,6 @@ describe('UserController', () => {
       status: jest.fn().mockReturnThis(),
     };
     next = jest.fn();
-  });
-
-  test('createUser - should call UserService.createUser and return 201', async () => {
-    req.body = {
-      username: 'testuser',
-      name: 'Test User',
-      email: 'test@example.com',
-      password: 'securepassword',
-    };
-
-    (UserService.createUser as jest.Mock).mockResolvedValue(req.body);
-
-    await UserController.createUser(req as Request, res as Response, next);
-
-    expect(UserService.createUser).toHaveBeenCalledWith(req.body);
-    expect(ResponseModel.send).toHaveBeenCalledWith(
-      res,
-      HttpStatus.CREATED,
-      req.body
-    );
-  });
-
-  test('createUser - should call next with ValidationError if fields are missing', async () => {
-    req.body = { username: '', name: '', email: '', password: '' };
-    await UserController.createUser(req as Request, res as Response, next);
-
-    expect(next).toHaveBeenCalledWith(new ValidationError());
   });
 
   test('getAllUsers - should call UserService.getAllUsers and return 200', async () => {

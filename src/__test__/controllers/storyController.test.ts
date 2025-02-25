@@ -137,6 +137,34 @@ describe('StoryController', () => {
     );
   });
 
+  test('getStoriesByAuthorUsername - should return stories by author username', async () => {
+    req.params = { username: 'user1' };
+
+    const mockStories = [
+      { id: 1, title: 'Story 1', description: 'Desc', authorUsername: 'user1' },
+      { id: 2, title: 'Story 2', description: 'Desc', authorUsername: 'user1' },
+    ];
+
+    (StoryService.getStoriesByAuthorUsername as jest.Mock).mockResolvedValue(
+      mockStories
+    );
+
+    await StoryController.getStoriesByAuthorUsername(
+      req as AuthRequest,
+      res as Response,
+      next
+    );
+
+    expect(StoryService.getStoriesByAuthorUsername).toHaveBeenCalledWith(
+      'user1'
+    );
+    expect(ResponseModel.send).toHaveBeenCalledWith(
+      res,
+      HttpStatus.OK,
+      mockStories
+    );
+  });
+
   test('updateStory - should update story and return it', async () => {
     req.params = { id: '1' };
     req.body = { title: 'Updated Story', description: 'Updated Desc' };

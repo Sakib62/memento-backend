@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
+import CreateUserDTO from '../dtos/createUserDTO';
 import AuthService from '../services/authService';
+import UserService from '../services/userService';
+import { ValidationError } from '../utils/errorClass';
 import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
-import { ValidationError } from '../utils/errorClass';
-import UserService from '../services/userService';
-import CreateUserDTO from '../dtos/createUserDTO';
 
 class AuthController {
-  static async createUser(
+  static async register(
     req: Request,
     res: Response,
     next: NextFunction
@@ -17,6 +17,17 @@ class AuthController {
       next(new ValidationError());
       return;
     }
+
+    if (!/^\S+@\S+\.\S+$/.test(user.email)) {
+      next(new ValidationError('Invalid email format.'));
+      return;
+    }
+
+    if (user.password.length < 6) {
+      next(new ValidationError('Password must be at least 6 characters.'));
+      return;
+    }
+
     try {
       const newUser = await UserService.createUser(user);
       ResponseModel.send(res, HttpStatus.CREATED, newUser);

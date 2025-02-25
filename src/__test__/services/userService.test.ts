@@ -124,6 +124,60 @@ describe('UserService', () => {
     );
   });
 
+  test('getUserByEmail - should return user by email', async () => {
+    const mockUser = {
+      id: 1,
+      username: 'user1',
+      name: 'User One',
+      email: 'user1@example.com',
+    };
+
+    userRepository.getUserByEmail.mockResolvedValue(mockUser);
+    mapToUserDTOMock.mockReturnValue(mockUser);
+
+    const result = await UserService.getUserByEmail('user1@example.com');
+
+    expect(userRepository.getUserByEmail).toHaveBeenCalledWith(
+      'user1@example.com'
+    );
+    expect(mapToUserDTOMock).toHaveBeenCalledWith(mockUser);
+    expect(result).toEqual(mockUser);
+  });
+
+  test('getUserByEmail - should throw NotFoundError if user not found', async () => {
+    userRepository.getUserByEmail.mockResolvedValue(null);
+
+    await expect(
+      UserService.getUserByEmail('nonexistent@example.com')
+    ).rejects.toThrow(NotFoundError);
+  });
+
+  test('findUserByIdentifier - should return user by identifier', async () => {
+    const mockUser = {
+      id: 1,
+      username: 'user1',
+      name: 'User One',
+      email: 'user1@example.com',
+    };
+
+    userRepository.findUserByIdentifier.mockResolvedValue(mockUser);
+    mapToUserDTOMock.mockReturnValue(mockUser);
+
+    const result = await UserService.findUserByIdentifier('user1');
+
+    expect(userRepository.findUserByIdentifier).toHaveBeenCalledWith('user1');
+    expect(mapToUserDTOMock).toHaveBeenCalledWith(mockUser);
+    expect(result).toEqual(mockUser);
+  });
+
+  test('findUserByIdentifier - should throw NotFoundError if user not found', async () => {
+    userRepository.findUserByIdentifier.mockResolvedValue(null);
+
+    await expect(UserService.findUserByIdentifier('unknown')).rejects.toThrow(
+      NotFoundError
+    );
+  });
+
   test('updateUser - should update user and return updated data', async () => {
     const userId = 1;
     const updateData: UpdateUserDTO = { name: 'Updated User' };
