@@ -4,26 +4,28 @@ import UserService from '../services/userService';
 import { ForbiddenError } from '../utils/errorClass';
 import { AuthRequest } from './authMiddleware';
 
+const Roles = {
+  USER: 0,
+  ADMIN: 1,
+};
+
 export const userRoleMiddleware = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   const user = req.user;
-  const isAdmin = user.role === 1;
-  if (isAdmin) {
+  if (user.role === Roles.ADMIN) {
     return next();
   }
   const { username, id } = req.params;
-  if (username) {
-    if (user.username !== username) {
-      throw new ForbiddenError();
-    }
+  if (username && user.username !== username) {
+    throw new ForbiddenError('You do not have permission for this action');
   } else if (id) {
     try {
       const fetchedUser = await UserService.getUserById(parseInt(id, 10));
       if (!fetchedUser || user.username !== fetchedUser.username) {
-        throw new ForbiddenError();
+        throw new ForbiddenError('You do not have permission for this action');
       }
     } catch (error) {
       next(error);
@@ -39,8 +41,7 @@ export const storyRoleMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   const user = req.user;
-  const isAdmin = user.role === 1;
-  if (isAdmin) {
+  if (user.role === Roles.ADMIN) {
     return next();
   }
   try {
@@ -48,7 +49,7 @@ export const storyRoleMiddleware = async (
       parseInt(req.params.id, 10)
     );
     if (!fetchedStory || user.username !== fetchedStory.authorUsername) {
-      throw new ForbiddenError();
+      throw new ForbiddenError('You do not have permission for this action');
     }
     return next();
   } catch (error) {

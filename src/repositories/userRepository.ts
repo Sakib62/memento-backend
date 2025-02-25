@@ -51,6 +51,15 @@ class UserRepository {
     const deletedCount = await db('users').where({ id: userId }).del();
     return deletedCount > 0;
   }
+
+  static async searchUser(pattern: string, limit: number, offset: number) {
+    const result = await db('users')
+      .select('*')
+      .where('username', 'ilike', `%${pattern}%`)
+      .limit(limit)
+      .offset(offset);
+    return result;
+  }
 }
 
 export default UserRepository;

@@ -32,6 +32,32 @@ class StoryRepository {
     const deletedCount = await db('stories').where('id', storyId).del();
     return deletedCount > 0;
   }
+
+  static async searchStoryTitle(
+    pattern: string,
+    limit: number,
+    offset: number
+  ) {
+    const result = await db('stories')
+      .select('*')
+      .where('title', 'ilike', `%${pattern}%`)
+      .limit(limit)
+      .offset(offset);
+    return result;
+  }
+
+  static async searchStoryDescription(
+    pattern: string,
+    limit: number,
+    offset: number
+  ) {
+    const result = await db('stories')
+      .select('*')
+      .where('description', 'ilike', `%${pattern}%`)
+      .limit(limit)
+      .offset(offset);
+    return result;
+  }
 }
 
 export default StoryRepository;

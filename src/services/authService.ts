@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import AuthRepository from '../repositories/authRepository';
-import UserRepository from '../repositories/userRepository';
 import {
   NotFoundError,
   UnauthorizedError,
   ValidationError,
 } from '../utils/errorClass';
+import UserService from './userService';
 
 class AuthService {
   static async createAuth(userId: number, password: string): Promise<void> {
@@ -15,9 +15,7 @@ class AuthService {
   }
 
   static async login(identifier: string, password: string): Promise<string> {
-    const normalizedIdentifier = identifier.toLowerCase();
-    const user =
-      await UserRepository.findUserByIdentifier(normalizedIdentifier);
+    const user = await UserService.findUserByIdentifier(identifier);
     if (!user)
       throw new ValidationError('User not found with the provided identifier');
 

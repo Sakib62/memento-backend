@@ -47,11 +47,33 @@ class UserService {
   }
 
   static async getUserByUsername(username: string): Promise<UserDTO | null> {
-    const user = await UserRepository.getUserByUsername(username);
+    const normalizedUsername = username.toLocaleLowerCase();
+    const user = await UserRepository.getUserByUsername(normalizedUsername);
     if (!user) {
       throw new NotFoundError('User not found');
     }
     return user ? mapToUserDTO(user) : null;
+  }
+
+  static async getUserByEmail(email: string): Promise<UserDTO | null> {
+    const normalizedEmail = email.toLocaleLowerCase();
+    const user = await UserRepository.getUserByEmail(normalizedEmail);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    return user ? mapToUserDTO(user) : null;
+  }
+
+  static async findUserByIdentifier(
+    identifier: string
+  ): Promise<UserDTO | null> {
+    const normalizedIdentifier = identifier.toLowerCase();
+    const user =
+      await UserRepository.findUserByIdentifier(normalizedIdentifier);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    return mapToUserDTO(user);
   }
 
   static async updateUser(
