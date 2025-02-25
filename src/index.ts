@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import errorHandler from './middlewares/errorHandler';
 import authRoutes from './routes/authRoutes';
+import searchRoutes from './routes/searchRoutes';
 import storyRoutes from './routes/storyRoutes';
 import userRoutes from './routes/userRoute';
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/stories', storyRoutes);
+app.use('/api/search', searchRoutes);
 
 const port = process.env.PORT || 3000;
 

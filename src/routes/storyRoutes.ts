@@ -16,4 +16,8 @@ router
   .put(authMiddleware, storyRoleMiddleware, StoryController.updateStory)
   .delete(authMiddleware, storyRoleMiddleware, StoryController.deleteStory);
 
+router
+  .route('/author/:username')
+  .get(authMiddleware, StoryController.getStoriesByAuthorUsername);
+
 export default router;

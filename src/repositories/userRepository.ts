@@ -22,6 +22,20 @@ class UserRepository {
     return user;
   }
 
+  static async getUserByEmail(email: string): Promise<User | null> {
+    const user = await db('users').where({ email }).first();
+    return user;
+  }
+
+  static async findUserByIdentifier(identifier: string): Promise<User | null> {
+    const query = db('users')
+      .where('username', identifier)
+      .orWhere('email', identifier)
+      .first();
+
+    return query;
+  }
+
   static async updateUser(
     userId: number,
     user: Partial<User>
@@ -36,6 +50,15 @@ class UserRepository {
   static async deleteUser(userId: number): Promise<boolean> {
     const deletedCount = await db('users').where({ id: userId }).del();
     return deletedCount > 0;
+  }
+
+  static async searchUser(pattern: string, limit: number, offset: number) {
+    const result = await db('users')
+      .select('*')
+      .where('username', 'ilike', `%${pattern}%`)
+      .limit(limit)
+      .offset(offset);
+    return result;
   }
 }
 

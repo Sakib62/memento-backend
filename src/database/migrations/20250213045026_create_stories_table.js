@@ -8,6 +8,7 @@ export function up(knex) {
       .notNullable()
       .references('username')
       .inTable('users')
+      .onUpdate('CASCADE')
       .onDelete('CASCADE');
     table.string('authorName').notNullable();
   });

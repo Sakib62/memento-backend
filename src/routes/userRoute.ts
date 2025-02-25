@@ -5,10 +5,7 @@ import { userRoleMiddleware } from '../middlewares/roleMiddleware';
 
 const router = Router();
 
-router
-  .route('/')
-  .post(userController.createUser)
-  .get(authMiddleware, userController.getAllUsers);
+router.route('/').get(authMiddleware, userController.getAllUsers);
 
 router
   .route('/:id')

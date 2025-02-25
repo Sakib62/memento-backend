@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import CreateUserDTO from '../dtos/createUserDTO';
 import UpdateUserDTO from '../dtos/updateUserDTO';
 import UserService from '../services/userService';
 import { ValidationError } from '../utils/errorClass';
@@ -7,24 +6,6 @@ import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
 
 class UserController {
-  static async createUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    const user: CreateUserDTO = req.body;
-    if (!user.username || !user.name || !user.email || !user.password) {
-      next(new ValidationError());
-      return;
-    }
-    try {
-      const newUser = await UserService.createUser(user);
-      ResponseModel.send(res, HttpStatus.CREATED, newUser);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   static async getAllUsers(
     req: Request,
     res: Response,

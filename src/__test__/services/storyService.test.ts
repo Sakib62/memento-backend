@@ -2,15 +2,17 @@ import Story from '../../database/models/storyModel';
 import { UpdateStoryDTO } from '../../dtos/storyDTO';
 import StoryRepository from '../../repositories/storyRepository';
 import StoryService from '../../services/storyService';
+import UserService from '../../services/userService';
 import { NotFoundError } from '../../utils/errorClass';
 
 jest.mock('../../repositories/storyRepository');
+jest.mock('../../services/userService');
 
 describe('StoryService', () => {
   const mockStoryData: Story = {
     title: 'Test Story',
     description: 'Test Description',
-    authorUsername: 'Test User1',
+    authorUsername: 'Test User 1',
     authorName: 'Test User',
   };
 
@@ -74,7 +76,7 @@ describe('StoryService', () => {
       title: 'Story 1',
       description: 'Description 1',
       authorUsername: 'User 1',
-      authorName: 'USer',
+      authorName: 'User',
     };
     storyRepository.getStoryById.mockResolvedValue(mockStory);
 
@@ -90,6 +92,59 @@ describe('StoryService', () => {
     await expect(StoryService.getStoryById(999)).rejects.toThrow(
       new NotFoundError('Story not found')
     );
+  });
+
+  test('getStoriesByAuthorUsername - should return stories by author username', async () => {
+    const username = 'TestUser1';
+    const normalizedUsername = username.toLowerCase();
+
+    const mockStories = [
+      {
+        id: 1,
+        title: 'Story 1',
+        description: 'Desc',
+        authorUsername: normalizedUsername,
+        authorName: 'User',
+      },
+      {
+        id: 2,
+        title: 'Story 2',
+        description: 'Desc',
+        authorUsername: normalizedUsername,
+        authorName: 'User',
+      },
+    ];
+
+    (UserService.getUserByUsername as jest.Mock).mockResolvedValue(true);
+    storyRepository.getStoriesByAuthorUsername.mockResolvedValue(mockStories);
+
+    const result = await StoryService.getStoriesByAuthorUsername(username);
+
+    expect(UserService.getUserByUsername).toHaveBeenCalledWith(
+      normalizedUsername
+    );
+    expect(storyRepository.getStoriesByAuthorUsername).toHaveBeenCalledWith(
+      normalizedUsername
+    );
+    expect(result).toEqual(mockStories);
+  });
+
+  test('getStoriesByAuthorUsername - should throw NotFoundError if user does not exist', async () => {
+    const username = 'NonExistentUser';
+    const normalizedUsername = username.toLowerCase();
+
+    (UserService.getUserByUsername as jest.Mock).mockRejectedValue(
+      new NotFoundError('User not found')
+    );
+
+    await expect(
+      StoryService.getStoriesByAuthorUsername(username)
+    ).rejects.toThrow(new NotFoundError('User not found'));
+
+    expect(UserService.getUserByUsername).toHaveBeenCalledWith(
+      normalizedUsername
+    );
+    expect(storyRepository.getStoriesByAuthorUsername).not.toHaveBeenCalled();
   });
 
   test('updateStory - should update a story and return it', async () => {
