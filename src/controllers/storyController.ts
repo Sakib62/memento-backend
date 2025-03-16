@@ -12,7 +12,7 @@ class StoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { title, description }: CreateStoryDTO = req.body;
+    const { title, description, tags }: CreateStoryDTO = req.body;
     if (!title || !description) {
       next(new ValidationError());
       return;
@@ -24,6 +24,7 @@ class StoryController {
         description,
         authorUsername: user.username,
         authorName: user.name,
+        tags: tags || [],
       };
       const newStory = await StoryService.createStory(storyPayload);
       ResponseModel.send(res, HttpStatus.CREATED, newStory);
@@ -71,7 +72,7 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const storyId = parseInt(req.params.id, 10);
+      const storyId = req.params.id;
       const story = await StoryService.getStoryById(storyId);
       ResponseModel.send(res, HttpStatus.OK, story);
     } catch (error) {
@@ -99,7 +100,7 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const storyId = parseInt(req.params.id, 10);
+      const storyId = req.params.id;
       const storyUpdates: UpdateStoryDTO = req.body;
       const updatedStory = await StoryService.updateStory(
         storyId,
@@ -117,7 +118,7 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const storyId = parseInt(req.params.id, 10);
+      const storyId = req.params.id;
       await StoryService.deleteStory(storyId);
       ResponseModel.send(res, HttpStatus.OK);
     } catch (error) {

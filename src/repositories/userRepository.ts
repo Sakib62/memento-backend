@@ -12,7 +12,7 @@ class UserRepository {
     return users;
   }
 
-  static async getUserById(userId: number): Promise<User | null> {
+  static async getUserById(userId: string): Promise<User | null> {
     const user = await db('users').where({ id: userId }).first();
     return user;
   }
@@ -37,7 +37,7 @@ class UserRepository {
   }
 
   static async updateUser(
-    userId: number,
+    userId: string,
     user: Partial<User>
   ): Promise<User | null> {
     const [updatedUser] = await db('users')
@@ -47,7 +47,7 @@ class UserRepository {
     return updatedUser;
   }
 
-  static async deleteUser(userId: number): Promise<boolean> {
+  static async deleteUser(userId: string): Promise<boolean> {
     const deletedCount = await db('users').where({ id: userId }).del();
     return deletedCount > 0;
   }

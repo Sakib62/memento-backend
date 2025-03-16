@@ -3,7 +3,12 @@ import Story from '../database/models/storyModel';
 
 class StoryRepository {
   static async createStory(storyData: Story): Promise<Story> {
-    const [newStory] = await db('stories').insert(storyData).returning('*');
+    const payload = {
+      ...storyData,
+      tags: JSON.stringify(storyData.tags || []),
+    };
+
+    const [newStory] = await db('stories').insert(payload).returning('*');
     return newStory;
   }
 
@@ -12,7 +17,7 @@ class StoryRepository {
     return stories;
   }
 
-  static async getStoryById(storyId: number): Promise<Story | null> {
+  static async getStoryById(storyId: string): Promise<Story | null> {
     const story = await db('stories').where('id', storyId).first();
     return story;
   }
@@ -25,17 +30,21 @@ class StoryRepository {
   }
 
   static async updateStory(
-    storyId: number,
+    storyId: string,
     storyData: Partial<Story>
   ): Promise<Story | null> {
+    const payload = {
+      ...storyData,
+      tags: JSON.stringify(storyData.tags || []),
+    };
     const [updatedStory] = await db('stories')
       .where('id', storyId)
-      .update(storyData)
+      .update(payload)
       .returning('*');
     return updatedStory;
   }
 
-  static async deleteStory(storyId: number): Promise<boolean> {
+  static async deleteStory(storyId: string): Promise<boolean> {
     const deletedCount = await db('stories').where('id', storyId).del();
     return deletedCount > 0;
   }

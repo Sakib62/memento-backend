@@ -9,7 +9,7 @@ import {
 import UserService from './userService';
 
 class AuthService {
-  static async createAuth(userId: number, password: string): Promise<void> {
+  static async createAuth(userId: string, password: string): Promise<void> {
     const hashedPassword = await bcrypt.hash(password, 10);
     await AuthRepository.createAuth(userId, hashedPassword);
   }
@@ -27,7 +27,12 @@ class AuthService {
     if (!isPasswordValid) throw new UnauthorizedError('Invalid credentials');
 
     const token = jwt.sign(
-      { username: user.username, name: user.name, role: user.role },
+      {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+      },
       process.env.JWT_SECRET_KEY as string,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { expiresIn: process.env.JWT_EXPIRY as any }

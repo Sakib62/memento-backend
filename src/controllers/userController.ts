@@ -45,7 +45,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = parseInt(req.params.id, 10);
+      const userId = req.params.id;
       const user = await UserService.getUserById(userId);
       ResponseModel.send(res, HttpStatus.OK, user);
     } catch (error) {
@@ -73,7 +73,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = parseInt(req.params.id, 10);
+      const userId = req.params.id;
       const userUpdates: Partial<UpdateUserDTO> = req.body;
       const updatedUser = await UserService.updateUser(userId, userUpdates);
       ResponseModel.send(res, HttpStatus.OK, updatedUser);
@@ -88,7 +88,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = parseInt(req.params.id, 10);
+      const userId = req.params.id;
       await UserService.deleteUser(userId);
       ResponseModel.send(res, HttpStatus.OK);
     } catch (error) {

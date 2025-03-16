@@ -15,7 +15,7 @@ class StoryService {
     return stories;
   }
 
-  static async getStoryById(storyId: number): Promise<Story | null> {
+  static async getStoryById(storyId: string): Promise<Story | null> {
     const story = await StoryRepository.getStoryById(storyId);
     if (!story) {
       throw new NotFoundError('Story not found');
@@ -34,7 +34,7 @@ class StoryService {
   }
 
   static async updateStory(
-    storyId: number,
+    storyId: string,
     storyData: UpdateStoryDTO
   ): Promise<Story | null> {
     const updatedStory = await StoryRepository.updateStory(storyId, storyData);
@@ -44,7 +44,7 @@ class StoryService {
     return updatedStory;
   }
 
-  static async deleteStory(storyId: number): Promise<boolean> {
+  static async deleteStory(storyId: string): Promise<boolean> {
     const isDeleted = await StoryRepository.deleteStory(storyId);
     if (!isDeleted) {
       throw new NotFoundError('Story not found');

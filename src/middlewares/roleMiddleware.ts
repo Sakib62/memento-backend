@@ -23,7 +23,7 @@ export const userRoleMiddleware = async (
     throw new ForbiddenError('You do not have permission for this action');
   } else if (id) {
     try {
-      const fetchedUser = await UserService.getUserById(parseInt(id, 10));
+      const fetchedUser = await UserService.getUserById(id);
       if (!fetchedUser || user.username !== fetchedUser.username) {
         throw new ForbiddenError('You do not have permission for this action');
       }
@@ -45,9 +45,7 @@ export const storyRoleMiddleware = async (
     return next();
   }
   try {
-    const fetchedStory = await StoryService.getStoryById(
-      parseInt(req.params.id, 10)
-    );
+    const fetchedStory = await StoryService.getStoryById(req.params.id);
     if (!fetchedStory || user.username !== fetchedStory.authorUsername) {
       throw new ForbiddenError('You do not have permission for this action');
     }

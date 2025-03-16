@@ -1,12 +1,12 @@
 export function up(knex) {
   return knex.schema.createTable('auth', (table) => {
-    table.increments('id').primary();
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table
-      .integer('userId')
-      .unsigned()
+      .uuid('userId')
       .references('id')
       .inTable('users')
-      .onDelete('CASCADE');
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE');
     table.string('password').notNullable();
   });
 }

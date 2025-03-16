@@ -1,5 +1,5 @@
 interface UserDTO {
-  id: number;
+  id: string;
   username: string;
   name: string;
   email: string;
