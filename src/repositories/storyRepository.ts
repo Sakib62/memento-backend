@@ -74,6 +74,20 @@ class StoryRepository {
       .offset(offset);
     return result;
   }
+
+  static async getStoriesByIds(storyIds: string[]) {
+    return await db('stories')
+      .whereIn('id', storyIds)
+      .select(
+        'id',
+        'title',
+        'description',
+        'authorName',
+        'tags',
+        'authorUsername',
+        'createdAt'
+      );
+  }
 }
 
 export default StoryRepository;

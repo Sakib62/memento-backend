@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes';
 import searchRoutes from './routes/searchRoutes';
 import storyRoutes from './routes/storyRoutes';
 import userRoutes from './routes/userRoute';
+import commentRoutes from './routes/commentRoutes';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/comments', commentRoutes);
 
 const port = process.env.PORT || 3000;
 

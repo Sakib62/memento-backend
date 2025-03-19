@@ -1,4 +1,5 @@
 import { NextFunction, Response } from 'express';
+import CommentRepository from '../repositories/commentRepository';
 import StoryService from '../services/storyService';
 import UserService from '../services/userService';
 import { ForbiddenError } from '../utils/errorClass';
@@ -53,5 +54,29 @@ export const storyRoleMiddleware = async (
   } catch (error) {
     next(error);
     return;
+  }
+};
+
+export const commentRoleMiddleware = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const user = req.user;
+  const { id: commentId } = req.params;
+
+  try {
+    const fetchedComment = await CommentRepository.getCommentById(commentId);
+
+    if (
+      !fetchedComment ||
+      (fetchedComment.userId !== user.id && user.role !== Roles.ADMIN)
+    ) {
+      throw new ForbiddenError('You do not have permission for this action');
+    }
+
+    return next();
+  } catch (error) {
+    next(error);
   }
 };

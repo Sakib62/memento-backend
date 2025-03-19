@@ -1,3 +1,4 @@
+import UpdateUserDTO from '../dtos/updateUserDTO';
 import db from '../config/db';
 import User from '../database/models/userModel';
 
@@ -38,7 +39,7 @@ class UserRepository {
 
   static async updateUser(
     userId: string,
-    user: Partial<User>
+    user: Partial<UpdateUserDTO>
   ): Promise<User | null> {
     const [updatedUser] = await db('users')
       .where({ id: userId })
