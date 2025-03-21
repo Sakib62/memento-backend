@@ -42,4 +42,8 @@ router
   .route('/:id/commentCount')
   .get(authMiddleware, CommentController.getCommentCountByStory);
 
+router
+  .route('/liked/top')
+  .get(authMiddleware, LikeController.getTopLikedStories);
+
 export default router;

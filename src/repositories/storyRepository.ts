@@ -12,8 +12,13 @@ class StoryRepository {
     return newStory;
   }
 
-  static async getAllStories(limit: number, offset: number): Promise<Story[]> {
-    const stories = await db('stories').select('*').limit(limit).offset(offset);
+  static async getAllStories(page: number, limit: number): Promise<Story[]> {
+    const offset = (page - 1) * limit;
+    const stories = await db('stories')
+      .select('*')
+      .limit(limit)
+      .offset(offset)
+      .orderBy('createdAt', 'desc');
     return stories;
   }
 

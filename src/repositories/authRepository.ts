@@ -10,6 +10,9 @@ class AuthRepository {
     const data = db('auth').where({ userId: userId }).first();
     return data;
   }
+  static async updateAuthData(userId: string, password: string): Promise<void> {
+    await db('auth').where({ userId }).update({ password });
+  }
 }
 
 export default AuthRepository;

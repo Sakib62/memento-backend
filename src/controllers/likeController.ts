@@ -86,6 +86,19 @@ class LikeController {
       next(error);
     }
   }
+
+  static async getTopLikedStories(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const stories = await LikeService.getTopLikedStories();
+      ResponseModel.send(res, HttpStatus.OK, stories);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default LikeController;

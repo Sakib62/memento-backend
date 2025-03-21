@@ -1,6 +1,6 @@
-import StoryRepository from '../repositories/storyRepository';
 import LikerDTO from '../dtos/likerDTO';
 import LikeRepository from '../repositories/likeRepository';
+import StoryRepository from '../repositories/storyRepository';
 
 class LikesService {
   static async toggleLike(userId: string, storyId: string) {
@@ -32,6 +32,11 @@ class LikesService {
 
     const likedStories = await StoryRepository.getStoriesByIds(likedStoryIds);
     return likedStories;
+  }
+
+  static async getTopLikedStories() {
+    const stories = await LikeRepository.getTopLikedStories();
+    return stories;
   }
 }
 

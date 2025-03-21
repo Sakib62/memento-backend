@@ -39,6 +39,28 @@ class AuthService {
     );
     return token;
   }
+
+  static async resetPassword(
+    userId: string,
+    currentPass: string,
+    newPass: string
+  ) {
+    const authData = await AuthRepository.getAuthData(userId);
+    if (!authData)
+      throw new NotFoundError('Authentication data not found for the user');
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPass,
+      authData.password
+    );
+    if (!isPasswordValid)
+      throw new UnauthorizedError('Incorrect Current Password');
+
+    const hashedPassword = await bcrypt.hash(newPass, 10);
+    await AuthRepository.updateAuthData(userId, hashedPassword);
+
+    return { message: 'Password reset successfully' };
+  }
 }
 
 export default AuthService;

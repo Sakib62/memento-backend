@@ -42,6 +42,27 @@ class LikeRepository {
 
     return result.map((row) => row.storyId);
   }
+
+  static async getTopLikedStories() {
+    const stories = await db('stories')
+      .select(
+        'stories.id',
+        'stories.title',
+        'stories.description',
+        'stories.authorUsername',
+        'stories.authorName',
+        'stories.tags',
+        'stories.createdAt',
+        'stories.updatedAt'
+      )
+      .count('likes.id as likesCount')
+      .leftJoin('likes', 'stories.id', 'likes.storyId')
+      .groupBy('stories.id')
+      .orderBy('likesCount', 'desc')
+      .limit(4);
+
+    return stories;
+  }
 }
 
 export default LikeRepository;
