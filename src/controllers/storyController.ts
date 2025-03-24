@@ -12,7 +12,7 @@ class StoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { title, description }: CreateStoryDTO = req.body;
+    const { title, description, tags }: CreateStoryDTO = req.body;
     if (!title || !description) {
       next(new ValidationError());
       return;
@@ -24,6 +24,7 @@ class StoryController {
         description,
         authorUsername: user.username,
         authorName: user.name,
+        tags: tags || [],
       };
       const newStory = await StoryService.createStory(storyPayload);
       ResponseModel.send(res, HttpStatus.CREATED, newStory);
@@ -38,27 +39,33 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const DEFAULT_OFFSET = 0;
       const DEFAULT_LIMIT = 10;
       const MAX_LIMIT = 100;
-      const DEFAULT_OFFSET = 0;
-      const MAX_OFFSET = 1000;
-      const limit =
-        req.query.limit !== undefined ? Number(req.query.limit) : DEFAULT_LIMIT;
+
       const offset =
-        req.query.offset !== undefined
+        req.query.offset !== undefined && !isNaN(Number(req.query.offset))
           ? Number(req.query.offset)
           : DEFAULT_OFFSET;
+
+      const limit =
+        req.query.limit !== undefined && !isNaN(Number(req.query.limit))
+          ? Number(req.query.limit)
+          : DEFAULT_LIMIT;
+
+      if (!Number.isInteger(offset) || offset < 0) {
+        throw new ValidationError(
+          `Offset must be a positive integer starting from 0.`
+        );
+      }
+
       if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
         throw new ValidationError(
           `Limit must be a positive integer between 1 and ${MAX_LIMIT}.`
         );
       }
-      if (!Number.isInteger(offset) || offset < 0 || offset > MAX_OFFSET) {
-        throw new ValidationError(
-          `Offset must be a integer between 0 and ${MAX_OFFSET}.`
-        );
-      }
-      const stories = await StoryService.getAllStories(limit, offset);
+
+      const stories = await StoryService.getAllStories(offset, limit);
       ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);
@@ -71,7 +78,7 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const storyId = parseInt(req.params.id, 10);
+      const storyId = req.params.id;
       const story = await StoryService.getStoryById(storyId);
       ResponseModel.send(res, HttpStatus.OK, story);
     } catch (error) {
@@ -99,7 +106,7 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const storyId = parseInt(req.params.id, 10);
+      const storyId = req.params.id;
       const storyUpdates: UpdateStoryDTO = req.body;
       const updatedStory = await StoryService.updateStory(
         storyId,
@@ -117,7 +124,7 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const storyId = parseInt(req.params.id, 10);
+      const storyId = req.params.id;
       await StoryService.deleteStory(storyId);
       ResponseModel.send(res, HttpStatus.OK);
     } catch (error) {

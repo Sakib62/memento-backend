@@ -38,7 +38,7 @@ class UserService {
     return users.map(mapToUserDTO);
   }
 
-  static async getUserById(userId: number): Promise<UserDTO | null> {
+  static async getUserById(userId: string): Promise<UserDTO | null> {
     const user = await UserRepository.getUserById(userId);
     if (!user) {
       throw new NotFoundError('User not found');
@@ -77,7 +77,7 @@ class UserService {
   }
 
   static async updateUser(
-    userId: number,
+    userId: string,
     user: Partial<UpdateUserDTO>
   ): Promise<UserDTO | null> {
     const updatedUser = await UserRepository.updateUser(userId, user);
@@ -87,7 +87,7 @@ class UserService {
     return updatedUser ? mapToUserDTO(updatedUser) : null;
   }
 
-  static async deleteUser(userId: number): Promise<boolean> {
+  static async deleteUser(userId: string): Promise<boolean> {
     const idDeleted = await UserRepository.deleteUser(userId);
     if (!idDeleted) {
       throw new NotFoundError('User not found');

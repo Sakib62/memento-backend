@@ -49,6 +49,47 @@ class AuthController {
       next(error);
     }
   }
+
+  static async resetPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = req.params.id;
+      if (!userId) {
+        return next(new ValidationError('User ID is required.'));
+      }
+
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) {
+        throw new ValidationError('All fields are required');
+      }
+
+      if (newPassword.length < 6) {
+        next(new ValidationError('Password must be at least 6 characters.'));
+        return;
+      }
+
+      if (currentPassword === newPassword) {
+        next(
+          new ValidationError(
+            'New password cannot be the same as the current password'
+          )
+        );
+        return;
+      }
+
+      const data = await AuthService.resetPassword(
+        userId,
+        currentPassword,
+        newPassword
+      );
+      ResponseModel.send(res, HttpStatus.OK, data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default AuthController;

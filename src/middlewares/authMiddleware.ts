@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../utils/errorClass';
 
 export interface AuthRequest extends Request {
-  user: { username: string; name: string; role: number };
+  user: { id: string; username: string; name: string; role: number };
 }
 
 export const authMiddleware = (

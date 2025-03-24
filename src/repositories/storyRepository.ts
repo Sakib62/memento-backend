@@ -3,16 +3,25 @@ import Story from '../database/models/storyModel';
 
 class StoryRepository {
   static async createStory(storyData: Story): Promise<Story> {
-    const [newStory] = await db('stories').insert(storyData).returning('*');
+    const payload = {
+      ...storyData,
+      tags: JSON.stringify(storyData.tags || []),
+    };
+
+    const [newStory] = await db('stories').insert(payload).returning('*');
     return newStory;
   }
 
-  static async getAllStories(limit: number, offset: number): Promise<Story[]> {
-    const stories = await db('stories').select('*').limit(limit).offset(offset);
+  static async getAllStories(offset: number, limit: number): Promise<Story[]> {
+    const stories = await db('stories')
+      .select('*')
+      .limit(limit)
+      .offset(offset)
+      .orderBy('createdAt', 'desc');
     return stories;
   }
 
-  static async getStoryById(storyId: number): Promise<Story | null> {
+  static async getStoryById(storyId: string): Promise<Story | null> {
     const story = await db('stories').where('id', storyId).first();
     return story;
   }
@@ -25,17 +34,21 @@ class StoryRepository {
   }
 
   static async updateStory(
-    storyId: number,
+    storyId: string,
     storyData: Partial<Story>
   ): Promise<Story | null> {
+    const payload = {
+      ...storyData,
+      tags: JSON.stringify(storyData.tags || []),
+    };
     const [updatedStory] = await db('stories')
       .where('id', storyId)
-      .update(storyData)
+      .update(payload)
       .returning('*');
     return updatedStory;
   }
 
-  static async deleteStory(storyId: number): Promise<boolean> {
+  static async deleteStory(storyId: string): Promise<boolean> {
     const deletedCount = await db('stories').where('id', storyId).del();
     return deletedCount > 0;
   }
@@ -64,6 +77,20 @@ class StoryRepository {
       .limit(limit)
       .offset(offset);
     return result;
+  }
+
+  static async getStoriesByIds(storyIds: string[]) {
+    return await db('stories')
+      .whereIn('id', storyIds)
+      .select(
+        'id',
+        'title',
+        'description',
+        'authorName',
+        'tags',
+        'authorUsername',
+        'createdAt'
+      );
   }
 }
 

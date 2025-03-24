@@ -9,7 +9,7 @@ class SearchController {
     try {
       const pattern = req.query.pattern as string;
 
-      const DEFAULT_LIMIT = 10;
+      const DEFAULT_LIMIT = 5;
       const MAX_LIMIT = 100;
       const DEFAULT_OFFSET = 0;
       const MAX_OFFSET = 1000;
