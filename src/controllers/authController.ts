@@ -57,7 +57,6 @@ class AuthController {
   ): Promise<void> {
     try {
       const userId = req.params.id;
-      console.log(userId)
       if (!userId) {
         return next(new ValidationError('User ID is required.'));
       }

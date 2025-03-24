@@ -39,23 +39,23 @@ class StoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const DEFAULT_PAGE = 1;
+      const DEFAULT_OFFSET = 0;
       const DEFAULT_LIMIT = 10;
       const MAX_LIMIT = 100;
 
-      const page =
-        req.query.page !== undefined && !isNaN(Number(req.query.page))
-          ? Number(req.query.page)
-          : DEFAULT_PAGE;
+      const offset =
+        req.query.offset !== undefined && !isNaN(Number(req.query.offset))
+          ? Number(req.query.offset)
+          : DEFAULT_OFFSET;
 
       const limit =
         req.query.limit !== undefined && !isNaN(Number(req.query.limit))
           ? Number(req.query.limit)
           : DEFAULT_LIMIT;
 
-      if (!Number.isInteger(page) || page < 1) {
+      if (!Number.isInteger(offset) || offset < 0) {
         throw new ValidationError(
-          `Page must be a positive integer starting from 1.`
+          `Offset must be a positive integer starting from 0.`
         );
       }
 
@@ -65,7 +65,7 @@ class StoryController {
         );
       }
 
-      const stories = await StoryService.getAllStories(page, limit);
+      const stories = await StoryService.getAllStories(offset, limit);
       ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);

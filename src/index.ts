@@ -3,19 +3,26 @@ import dotenv from 'dotenv';
 import express from 'express';
 import errorHandler from './middlewares/errorHandler';
 import authRoutes from './routes/authRoutes';
+import commentRoutes from './routes/commentRoutes';
 import searchRoutes from './routes/searchRoutes';
 import storyRoutes from './routes/storyRoutes';
 import userRoutes from './routes/userRoute';
-import commentRoutes from './routes/commentRoutes';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
+const allowedOrigins = process.env.FRONTEND_URLS?.split(',') || [];
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS error: ${origin} not allowed`));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -32,6 +39,10 @@ const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.send('API is working!');
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({ error: 'Route not found' });
 });
 
 app.use(errorHandler);
