@@ -34,8 +34,8 @@ class LikesService {
     return likedStories;
   }
 
-  static async getTopLikedStories() {
-    const stories = await LikeRepository.getTopLikedStories();
+  static async getTopLikedStories(offset: number, limit: number) {
+    const stories = await LikeRepository.getTopLikedStories(offset, limit);
     return stories;
   }
 }

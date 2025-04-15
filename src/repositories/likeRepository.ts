@@ -43,7 +43,7 @@ class LikeRepository {
     return result.map((row) => row.storyId);
   }
 
-  static async getTopLikedStories() {
+  static async getTopLikedStories(offset: number, limit: number) {
     const stories = await db('stories')
       .select(
         'stories.id',
@@ -59,7 +59,8 @@ class LikeRepository {
       .leftJoin('likes', 'stories.id', 'likes.storyId')
       .groupBy('stories.id')
       .orderBy('likesCount', 'desc')
-      .limit(4);
+      .limit(limit)
+      .offset(offset);
 
     return stories;
   }

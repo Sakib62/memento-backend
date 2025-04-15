@@ -4,6 +4,7 @@ import LikeRepository from '../repositories/likeRepository';
 import LikeService from '../services/likeService';
 import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
+import { ValidationError } from '../utils/errorClass';
 
 class LikeController {
   static async toggleLike(
@@ -93,7 +94,33 @@ class LikeController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const stories = await LikeService.getTopLikedStories();
+      const DEFAULT_OFFSET = 0;
+      const DEFAULT_LIMIT = 10;
+      const MAX_LIMIT = 100;
+
+      const offset =
+        req.query.offset !== undefined && !isNaN(Number(req.query.offset))
+          ? Number(req.query.offset)
+          : DEFAULT_OFFSET;
+
+      const limit =
+        req.query.limit !== undefined && !isNaN(Number(req.query.limit))
+          ? Number(req.query.limit)
+          : DEFAULT_LIMIT;
+
+      if (!Number.isInteger(offset) || offset < 0) {
+        throw new ValidationError(
+          `Offset must be a positive integer starting from 0.`
+        );
+      }
+
+      if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
+        throw new ValidationError(
+          `Limit must be a positive integer between 1 and ${MAX_LIMIT}.`
+        );
+      }
+
+      const stories = await LikeService.getTopLikedStories(offset, limit);
       ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);
