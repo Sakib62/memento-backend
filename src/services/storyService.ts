@@ -5,7 +5,7 @@ import { NotFoundError } from '../utils/errorClass';
 import UserService from './userService';
 
 class StoryService {
-  static async createStory(storyPayload: Story): Promise<Story> {
+  static async createStory(storyPayload: Partial<Story>): Promise<Story> {
     const newStory = await StoryRepository.createStory(storyPayload);
     return newStory;
   }
@@ -26,10 +26,8 @@ class StoryService {
   static async getStoriesByAuthorUsername(
     username: string
   ): Promise<Story[] | null> {
-    const normalizedUsername = username.toLowerCase();
-    await UserService.getUserByUsername(normalizedUsername);
-    const stories =
-      await StoryRepository.getStoriesByAuthorUsername(normalizedUsername);
+    const user = await UserService.getUserByUsername(username);
+    const stories = await StoryRepository.getStoriesByAuthorUsername(user.id);
     return stories;
   }
 

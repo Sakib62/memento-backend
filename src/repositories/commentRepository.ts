@@ -54,10 +54,29 @@ class CommentRepository {
   static async getCommentedStoriesByUser(userId: string) {
     const commentedStories = await db('stories')
       .join('comments', 'stories.id', 'comments.storyId')
+      .join('users', 'stories.authorId', 'users.id')
       .where('comments.userId', userId)
-      .select('stories.*')
-      .max('comments.createdAt as latestCommentAt') // Get the latest comment time
-      .groupBy('stories.id')
+      .select(
+        'stories.id',
+        'stories.title',
+        'stories.description',
+        'stories.tags',
+        'stories.createdAt',
+        'stories.updatedAt',
+        'users.username as authorUsername',
+        'users.name as authorName'
+      )
+      .max('comments.createdAt as latestCommentAt')
+      .groupBy(
+        'stories.id',
+        'stories.title',
+        'stories.description',
+        'stories.tags',
+        'stories.createdAt',
+        'stories.updatedAt',
+        'users.username',
+        'users.name'
+      )
       .orderBy('latestCommentAt', 'desc');
 
     return commentedStories;

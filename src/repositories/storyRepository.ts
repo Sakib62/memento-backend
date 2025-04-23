@@ -2,7 +2,7 @@ import db from '../config/db';
 import Story from '../database/models/storyModel';
 
 class StoryRepository {
-  static async createStory(storyData: Story): Promise<Story> {
+  static async createStory(storyData: Partial<Story>): Promise<Story> {
     const payload = {
       ...storyData,
       tags: JSON.stringify(storyData.tags || []),
@@ -14,22 +14,42 @@ class StoryRepository {
 
   static async getAllStories(offset: number, limit: number): Promise<Story[]> {
     const stories = await db('stories')
-      .select('*')
+      .join('users', 'stories.authorId', '=', 'users.id')
+      .select(
+        'stories.*',
+        { authorUsername: 'users.username' },
+        { authorName: 'users.name' }
+      )
+      .orderBy('stories.createdAt', 'desc')
       .limit(limit)
-      .offset(offset)
-      .orderBy('createdAt', 'desc');
+      .offset(offset);
     return stories;
   }
 
   static async getStoryById(storyId: string): Promise<Story | null> {
-    const story = await db('stories').where('id', storyId).first();
+    const story = await db('stories')
+      .join('users', 'stories.authorId', '=', 'users.id')
+      .select(
+        'stories.*',
+        { authorUsername: 'users.username' },
+        { authorName: 'users.name' }
+      )
+      .where('stories.id', storyId)
+      .first();
     return story;
   }
 
   static async getStoriesByAuthorUsername(
-    authorUsername: string
+    authorId: string
   ): Promise<Story[] | null> {
-    const stories = await db('stories').where('authorUsername', authorUsername);
+    const stories = await db('stories')
+      .join('users', 'stories.authorId', '=', 'users.id')
+      .select(
+        'stories.*',
+        { authorUsername: 'users.username' },
+        { authorName: 'users.name' }
+      )
+      .where('authorId', authorId);
     return stories;
   }
 
@@ -40,6 +60,7 @@ class StoryRepository {
     const payload = {
       ...storyData,
       tags: JSON.stringify(storyData.tags || []),
+      updatedAt: db.fn.now(),
     };
     const [updatedStory] = await db('stories')
       .where('id', storyId)
@@ -57,9 +78,14 @@ class StoryRepository {
     pattern: string,
     limit: number,
     offset: number
-  ) {
+  ): Promise<Story[] | null> {
     const result = await db('stories')
-      .select('*')
+      .join('users', 'stories.authorId', '=', 'users.id')
+      .select(
+        'stories.*',
+        { authorUsername: 'users.username' },
+        { authorName: 'users.name' }
+      )
       .where('title', 'ilike', `%${pattern}%`)
       .limit(limit)
       .offset(offset);
@@ -70,9 +96,14 @@ class StoryRepository {
     pattern: string,
     limit: number,
     offset: number
-  ) {
+  ): Promise<Story[] | null> {
     const result = await db('stories')
-      .select('*')
+      .join('users', 'stories.authorId', '=', 'users.id')
+      .select(
+        'stories.*',
+        { authorUsername: 'users.username' },
+        { authorName: 'users.name' }
+      )
       .where('description', 'ilike', `%${pattern}%`)
       .limit(limit)
       .offset(offset);
@@ -81,15 +112,12 @@ class StoryRepository {
 
   static async getStoriesByIds(storyIds: string[]) {
     return await db('stories')
-      .whereIn('id', storyIds)
+      .join('users', 'stories.authorId', '=', 'users.id')
+      .whereIn('stories.id', storyIds)
       .select(
-        'id',
-        'title',
-        'description',
-        'authorName',
-        'tags',
-        'authorUsername',
-        'createdAt'
+        'stories.*',
+        { authorUsername: 'users.username' },
+        { authorName: 'users.name' }
       );
   }
 }

@@ -4,13 +4,11 @@ export function up(knex) {
     table.string('title').notNullable();
     table.text('description').notNullable();
     table
-      .string('authorUsername')
-      .notNullable()
-      .references('username')
+      .uuid('authorId')
+      .references('id')
       .inTable('users')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
-    table.string('authorName').notNullable();
 
     table.specificType('tags', 'jsonb').defaultTo(knex.raw("'[]'::jsonb"));
     table.timestamp('createdAt').defaultTo(knex.fn.now());

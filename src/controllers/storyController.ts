@@ -22,8 +22,9 @@ class StoryController {
       const storyPayload = {
         title,
         description,
-        authorUsername: user.username,
-        authorName: user.name,
+        authorId: user.id,
+        // authorUsername: user.username,
+        // authorName: user.name,
         tags: tags || [],
       };
       const newStory = await StoryService.createStory(storyPayload);

@@ -5,6 +5,7 @@ interface Story {
   authorUsername: string;
   authorName: string;
   tags?: string[];
+  createdAt: Date;
 }
 
 export default Story;
