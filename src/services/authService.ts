@@ -1,12 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import AuthRepository from '../repositories/authRepository';
-import {
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from '../utils/errorClass';
-import UserService from './userService';
+import UserRepository from '../repositories/userRepository';
+import { NotFoundError, UnauthorizedError } from '../utils/errorClass';
 
 class AuthService {
   static async createAuth(userId: string, password: string): Promise<void> {
@@ -15,13 +11,13 @@ class AuthService {
   }
 
   static async login(identifier: string, password: string): Promise<string> {
-    const user = await UserService.findUserByIdentifier(identifier);
-    if (!user)
-      throw new ValidationError('User not found with the provided identifier');
+    const normalizedIdentifier = identifier.toLowerCase();
+    const user =
+      await UserRepository.findUserByIdentifier(normalizedIdentifier);
+    if (!user) throw new UnauthorizedError('Invalid credentials');
 
     const authData = await AuthRepository.getAuthData(user.id);
-    if (!authData)
-      throw new NotFoundError('Authentication data not found for the user');
+    if (!authData) throw new UnauthorizedError('Invalid credentials');
 
     const isPasswordValid = await bcrypt.compare(password, authData.password);
     if (!isPasswordValid) throw new UnauthorizedError('Invalid credentials');

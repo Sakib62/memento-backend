@@ -5,19 +5,26 @@ import StoryRepository from '../repositories/storyRepository';
 class LikesService {
   static async toggleLike(userId: string, storyId: string) {
     const existingLike = await LikeRepository.checkIfLiked(userId, storyId);
-
     if (existingLike) {
       await LikeRepository.removeLike(userId, storyId);
     } else {
       await LikeRepository.addLike(userId, storyId);
     }
-
-    const likeCount = await LikeRepository.getLikeCount(storyId);
-    return { likeCount };
+    const likeData = await LikesService.getLikeStatus(userId, storyId);
+    return likeData;
   }
 
   static async getLikeCount(storyId: string): Promise<number> {
     return LikeRepository.getLikeCount(storyId);
+  }
+
+  static async getLikeStatus(userId: string, storyId: string) {
+    const likeCount = await LikeRepository.getLikeCount(storyId);
+    const hasLiked = await LikeRepository.checkIfLiked(userId, storyId);
+    return {
+      likeCount,
+      hasLiked: !!hasLiked,
+    };
   }
 
   static async getStoryLikers(storyId: string): Promise<LikerDTO[]> {
@@ -29,7 +36,6 @@ class LikesService {
     if (!likedStoryIds.length) {
       return [];
     }
-
     const likedStories = await StoryRepository.getStoriesByIds(likedStoryIds);
     return likedStories;
   }

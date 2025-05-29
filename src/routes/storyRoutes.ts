@@ -16,8 +16,7 @@ router
   .route('/:id')
   .get(authMiddleware, StoryController.getStoryById)
   .put(authMiddleware, storyRoleMiddleware, StoryController.updateStory)
-  .delete(authMiddleware, storyRoleMiddleware, StoryController.deleteStory)
-  .post(authMiddleware, LikeController.toggleLike);
+  .delete(authMiddleware, storyRoleMiddleware, StoryController.deleteStory);
 
 router
   .route('/author/:username')
@@ -27,11 +26,10 @@ router
   .route('/:id/likes/count')
   .get(authMiddleware, LikeController.getLikeCount);
 
-router.route('/:id/likes').get(authMiddleware, LikeController.getStoryLikers);
-
 router
-  .route('/:id/likeStatus')
-  .get(authMiddleware, LikeController.getLikeStatus);
+  .route('/:id/likes')
+  .get(authMiddleware, LikeController.getLikeStatus)
+  .post(authMiddleware, LikeController.toggleLike);
 
 router
   .route('/:id/comments')

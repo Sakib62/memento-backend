@@ -1,8 +1,9 @@
 import { NextFunction, Response } from 'express';
+import { validate } from 'uuid';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO';
 import { AuthRequest } from '../middlewares/authMiddleware';
 import StoryService from '../services/storyService';
-import { ValidationError } from '../utils/errorClass';
+import { NotFoundError, ValidationError } from '../utils/errorClass';
 import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
 
@@ -23,8 +24,6 @@ class StoryController {
         title,
         description,
         authorId: user.id,
-        // authorUsername: user.username,
-        // authorName: user.name,
         tags: tags || [],
       };
       const newStory = await StoryService.createStory(storyPayload);
@@ -49,16 +48,16 @@ class StoryController {
           ? Number(req.query.offset)
           : DEFAULT_OFFSET;
 
-      const limit =
-        req.query.limit !== undefined && !isNaN(Number(req.query.limit))
-          ? Number(req.query.limit)
-          : DEFAULT_LIMIT;
-
       if (!Number.isInteger(offset) || offset < 0) {
         throw new ValidationError(
           `Offset must be a positive integer starting from 0.`
         );
       }
+
+      const limit =
+        req.query.limit !== undefined && !isNaN(Number(req.query.limit))
+          ? Number(req.query.limit)
+          : DEFAULT_LIMIT;
 
       if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
         throw new ValidationError(
@@ -66,7 +65,14 @@ class StoryController {
         );
       }
 
-      const stories = await StoryService.getAllStories(offset, limit);
+      const filter = req.query.filter as string;
+
+      const stories = await StoryService.getAllStories(
+        offset,
+        limit,
+        req.user.id,
+        filter
+      );
       ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);
@@ -80,9 +86,14 @@ class StoryController {
   ): Promise<void> {
     try {
       const storyId = req.params.id;
+      if (!validate(storyId)) {
+        throw new NotFoundError('Story not found');
+      }
+
       const story = await StoryService.getStoryById(storyId);
       ResponseModel.send(res, HttpStatus.OK, story);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }

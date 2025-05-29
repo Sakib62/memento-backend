@@ -1,7 +1,10 @@
+import LikeRepository from '../repositories/likeRepository';
 import Story from '../database/models/storyModel';
 import { UpdateStoryDTO } from '../dtos/storyDTO';
 import StoryRepository from '../repositories/storyRepository';
 import { NotFoundError } from '../utils/errorClass';
+import CommentService from './commentService';
+import LikesService from './likeService';
 import UserService from './userService';
 
 class StoryService {
@@ -10,9 +13,37 @@ class StoryService {
     return newStory;
   }
 
-  static async getAllStories(offset: number, limit: number): Promise<Story[]> {
-    const stories = await StoryRepository.getAllStories(offset, limit);
-    return stories;
+  static async getAllStories(
+    offset: number,
+    limit: number,
+    userId: string,
+    filter?: string
+  ): Promise<Story[]> {
+    let stories;
+
+    if (filter === 'mostLiked') {
+      stories = await LikeRepository.getTopLikedStories(offset, limit);
+    } else {
+      stories = await StoryRepository.getAllStories(offset, limit);
+    }
+
+    const enrichedStories = await Promise.all(
+      stories.map(async (story) => {
+        const likeStatus = await LikesService.getLikeStatus(userId, story.id);
+        const commentCount = await CommentService.getCommentCountByStory(
+          story.id
+        );
+
+        return {
+          ...story,
+          likeCount: likeStatus.likeCount,
+          hasLiked: likeStatus.hasLiked,
+          commentCount,
+        };
+      })
+    );
+
+    return enrichedStories;
   }
 
   static async getStoryById(storyId: string): Promise<Story | null> {

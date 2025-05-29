@@ -1,10 +1,9 @@
 import { NextFunction, Response } from 'express';
 import { AuthRequest } from '../middlewares/authMiddleware';
-import LikeRepository from '../repositories/likeRepository';
 import LikeService from '../services/likeService';
+import { ValidationError } from '../utils/errorClass';
 import { HttpStatus } from '../utils/httpStatus';
 import ResponseModel from '../utils/responseModel';
-import { ValidationError } from '../utils/errorClass';
 
 class LikeController {
   static async toggleLike(
@@ -16,8 +15,7 @@ class LikeController {
       const storyId = req.params.id;
       const userId = req.user.id;
       const result = await LikeService.toggleLike(userId, storyId);
-      const likeCount = result.likeCount;
-      ResponseModel.send(res, HttpStatus.OK, { likeCount });
+      ResponseModel.send(res, HttpStatus.CREATED, result);
     } catch (error) {
       next(error);
     }
@@ -59,15 +57,8 @@ class LikeController {
     try {
       const storyId = req.params.id;
       const userId = req.user.id;
-
-      const likeCount = await LikeRepository.getLikeCount(storyId);
-
-      const likedByUser = await LikeRepository.checkIfLiked(userId, storyId);
-
-      ResponseModel.send(res, HttpStatus.OK, {
-        likeCount,
-        likedByUser: !!likedByUser,
-      });
+      const likeStatus = await LikeService.getLikeStatus(userId, storyId);
+      ResponseModel.send(res, HttpStatus.OK, likeStatus);
     } catch (error) {
       next(error);
     }
@@ -81,7 +72,6 @@ class LikeController {
     try {
       const userId = req.params.id;
       const likedStories = await LikeService.getLikedStoriesByUser(userId);
-
       ResponseModel.send(res, HttpStatus.OK, likedStories);
     } catch (error) {
       next(error);
@@ -103,16 +93,16 @@ class LikeController {
           ? Number(req.query.offset)
           : DEFAULT_OFFSET;
 
-      const limit =
-        req.query.limit !== undefined && !isNaN(Number(req.query.limit))
-          ? Number(req.query.limit)
-          : DEFAULT_LIMIT;
-
       if (!Number.isInteger(offset) || offset < 0) {
         throw new ValidationError(
           `Offset must be a positive integer starting from 0.`
         );
       }
+
+      const limit =
+        req.query.limit !== undefined && !isNaN(Number(req.query.limit))
+          ? Number(req.query.limit)
+          : DEFAULT_LIMIT;
 
       if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
         throw new ValidationError(

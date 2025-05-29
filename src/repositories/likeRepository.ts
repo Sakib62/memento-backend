@@ -57,7 +57,7 @@ class LikeRepository {
         'users.username as authorUsername',
         'users.name as authorName'
       )
-      .count('likes.id as likesCount')
+      .count('likes.id as likeCount')
       .groupBy(
         'stories.id',
         'stories.title',
@@ -68,7 +68,7 @@ class LikeRepository {
         'users.username',
         'users.name'
       )
-      .orderBy('likesCount', 'desc')
+      .orderBy('likeCount', 'desc')
       .limit(limit)
       .offset(offset);
 

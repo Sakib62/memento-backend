@@ -94,7 +94,7 @@ class CommentController {
     try {
       const storyId = req.params.id;
       const commentCount = await CommentService.getCommentCountByStory(storyId);
-      ResponseModel.send(res, HttpStatus.OK, commentCount);
+      ResponseModel.send(res, HttpStatus.OK, { commentCount });
     } catch (error) {
       next(error);
     }
