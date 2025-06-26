@@ -1,6 +1,6 @@
-import LikeRepository from '../repositories/likeRepository';
 import Story from '../database/models/storyModel';
 import { UpdateStoryDTO } from '../dtos/storyDTO';
+import LikeRepository from '../repositories/likeRepository';
 import StoryRepository from '../repositories/storyRepository';
 import { NotFoundError } from '../utils/errorClass';
 import CommentService from './commentService';
@@ -16,7 +16,6 @@ class StoryService {
   static async getAllStories(
     offset: number,
     limit: number,
-    userId: string,
     filter?: string
   ): Promise<Story[]> {
     let stories;
@@ -29,15 +28,14 @@ class StoryService {
 
     const enrichedStories = await Promise.all(
       stories.map(async (story) => {
-        const likeStatus = await LikesService.getLikeStatus(userId, story.id);
+        const likeCount = await LikesService.getLikeCount(story.id);
         const commentCount = await CommentService.getCommentCountByStory(
           story.id
         );
 
         return {
           ...story,
-          likeCount: likeStatus.likeCount,
-          hasLiked: likeStatus.hasLiked,
+          likeCount,
           commentCount,
         };
       })
@@ -79,6 +77,11 @@ class StoryService {
       throw new NotFoundError('Story not found');
     }
     return isDeleted;
+  }
+
+  static async countUserStories(authorId: string): Promise<number> {
+    const count = await StoryRepository.countUserStories(authorId);
+    return count;
   }
 }
 

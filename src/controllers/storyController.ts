@@ -1,4 +1,4 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { validate } from 'uuid';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO';
 import { AuthRequest } from '../middlewares/authMiddleware';
@@ -34,7 +34,7 @@ class StoryController {
   }
 
   static async getAllStories(
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -67,12 +67,7 @@ class StoryController {
 
       const filter = req.query.filter as string;
 
-      const stories = await StoryService.getAllStories(
-        offset,
-        limit,
-        req.user.id,
-        filter
-      );
+      const stories = await StoryService.getAllStories(offset, limit, filter);
       ResponseModel.send(res, HttpStatus.OK, stories);
     } catch (error) {
       next(error);
@@ -80,7 +75,7 @@ class StoryController {
   }
 
   static async getStoryById(
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -99,7 +94,7 @@ class StoryController {
   }
 
   static async getStoriesByAuthorUsername(
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {

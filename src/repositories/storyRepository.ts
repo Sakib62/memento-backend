@@ -74,6 +74,15 @@ class StoryRepository {
     return deletedCount > 0;
   }
 
+  static async countUserStories(authorId: string): Promise<number> {
+    const result = await db('stories')
+      .where('authorId', authorId)
+      .count('id as count')
+      .first();
+
+    return Number(result?.count) || 0;
+  }
+
   static async searchStoryTitle(
     pattern: string,
     limit: number,

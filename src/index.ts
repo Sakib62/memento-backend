@@ -35,7 +35,7 @@ app.use('/api/stories', storyRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/comments', commentRoutes);
 
-const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT) || 3000;
 
 app.get('/', (req, res) => {
   res.send('API is working!');

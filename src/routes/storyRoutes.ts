@@ -10,21 +10,23 @@ const router = Router();
 router
   .route('/')
   .post(authMiddleware, StoryController.createStory)
-  .get(authMiddleware, StoryController.getAllStories);
+  .get(StoryController.getAllStories);
 
 router
   .route('/:id')
-  .get(authMiddleware, StoryController.getStoryById)
+  .get(StoryController.getStoryById)
   .put(authMiddleware, storyRoleMiddleware, StoryController.updateStory)
   .delete(authMiddleware, storyRoleMiddleware, StoryController.deleteStory);
 
 router
   .route('/author/:username')
-  .get(authMiddleware, StoryController.getStoriesByAuthorUsername);
+  .get(StoryController.getStoriesByAuthorUsername);
+
+router.route('/:id/likes/count').get(LikeController.getLikeCount);
 
 router
-  .route('/:id/likes/count')
-  .get(authMiddleware, LikeController.getLikeCount);
+  .route('/:id/likes/hasLiked')
+  .get(authMiddleware, LikeController.checkIfLiked);
 
 router
   .route('/:id/likes')
@@ -33,7 +35,7 @@ router
 
 router
   .route('/:id/comments')
-  .get(authMiddleware, CommentController.getCommentsForStory)
+  .get(CommentController.getCommentsForStory)
   .post(authMiddleware, CommentController.createComment);
 
 router
