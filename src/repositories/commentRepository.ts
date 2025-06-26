@@ -86,6 +86,15 @@ class CommentRepository {
     const result = await db('comments').where({ storyId }).count().first();
     return Number(result?.count) || 0;
   }
+
+  static async countUserComments(userId: string): Promise<number> {
+    const result = await db('comments')
+      .where('userId', userId)
+      .countDistinct('storyId as count')
+      .first();
+
+    return Number(result?.count) || 0;
+  }
 }
 
 export default CommentRepository;

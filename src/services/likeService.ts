@@ -18,12 +18,17 @@ class LikesService {
     return LikeRepository.getLikeCount(storyId);
   }
 
+  static async checkIfLiked(userId: string, storyId: string) {
+    const hasLiked = await LikeRepository.checkIfLiked(userId, storyId);
+    return hasLiked;
+  }
+
   static async getLikeStatus(userId: string, storyId: string) {
     const likeCount = await LikeRepository.getLikeCount(storyId);
     const hasLiked = await LikeRepository.checkIfLiked(userId, storyId);
     return {
       likeCount,
-      hasLiked: !!hasLiked,
+      hasLiked,
     };
   }
 
@@ -43,6 +48,11 @@ class LikesService {
   static async getTopLikedStories(offset: number, limit: number) {
     const stories = await LikeRepository.getTopLikedStories(offset, limit);
     return stories;
+  }
+
+  static async countUserLikes(userId: string): Promise<number> {
+    const count = await LikeRepository.countUserLikes(userId);
+    return count;
   }
 }
 

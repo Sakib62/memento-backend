@@ -47,6 +47,11 @@ class CommentService {
       await CommentRepository.getCommentCountByStory(storyId);
     return commentCount;
   }
+
+  static async countUserComments(userId: string): Promise<number> {
+    const count = await CommentRepository.countUserComments(userId);
+    return count;
+  }
 }
 
 export default CommentService;

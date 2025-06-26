@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import CommentController from '../controllers/commentController';
 import LikeController from '../controllers/likeController';
 import UserController from '../controllers/userController';
 import { authMiddleware } from '../middlewares/authMiddleware';
+import { optionalAuth } from '../middlewares/optionalAuth';
 import { userRoleMiddleware } from '../middlewares/roleMiddleware';
-import CommentController from '../controllers/commentController';
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router
 
 router
   .route('/username/:username')
-  .get(authMiddleware, UserController.getUserByUsername);
+  .get(optionalAuth, UserController.getUserByUsername);
 
 router
   .route('/:id/stories/liked')

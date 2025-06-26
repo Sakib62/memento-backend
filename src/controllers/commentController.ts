@@ -1,4 +1,4 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/authMiddleware';
 import CommentService from '../services/commentService';
 import { HttpStatus } from '../utils/httpStatus';
@@ -26,7 +26,7 @@ class CommentController {
   }
 
   static async getCommentsForStory(
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {

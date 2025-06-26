@@ -16,8 +16,8 @@ class LikeRepository {
   }
 
   static async checkIfLiked(userId: string, storyId: string) {
-    const like = await db('likes').where({ userId, storyId }).first();
-    return like;
+    const hasLiked = await db('likes').where({ userId, storyId }).first();
+    return !!hasLiked;
   }
 
   static async getLikeCount(storyId: string): Promise<number> {
@@ -73,6 +73,15 @@ class LikeRepository {
       .offset(offset);
 
     return stories;
+  }
+
+  static async countUserLikes(userId: string): Promise<number> {
+    const result = await db('likes')
+      .where('userId', userId)
+      .count('id as count')
+      .first();
+
+    return Number(result?.count) || 0;
   }
 }
 

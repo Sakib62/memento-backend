@@ -1,4 +1,4 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/authMiddleware';
 import LikeService from '../services/likeService';
 import { ValidationError } from '../utils/errorClass';
@@ -22,7 +22,7 @@ class LikeController {
   }
 
   static async getLikeCount(
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -30,6 +30,21 @@ class LikeController {
       const storyId = req.params.id;
       const likeCount = await LikeService.getLikeCount(storyId);
       ResponseModel.send(res, HttpStatus.OK, { likeCount });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async checkIfLiked(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const storyId = req.params.id;
+      const userId = req.user.id;
+      const hasLiked = await LikeService.checkIfLiked(userId, storyId);
+      ResponseModel.send(res, HttpStatus.OK, { hasLiked });
     } catch (error) {
       next(error);
     }

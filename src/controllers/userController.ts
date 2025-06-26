@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import UpdateUserDTO from '../dtos/updateUserDTO';
+import { AuthRequest } from '../middlewares/authMiddleware';
+import CommentService from '../services/commentService';
+import LikeService from '../services/likeService';
+import StoryService from '../services/storyService';
 import UserService from '../services/userService';
 import { ValidationError } from '../utils/errorClass';
 import { HttpStatus } from '../utils/httpStatus';
@@ -54,14 +58,42 @@ class UserController {
   }
 
   static async getUserByUsername(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
       const username = req.params.username;
       const user = await UserService.getUserByUsername(username);
-      ResponseModel.send(res, HttpStatus.OK, user);
+
+      const includeCounts = req.query.storyCount === 'true';
+      const loggedInUser = req.user;
+
+      if (!includeCounts) {
+        ResponseModel.send(res, HttpStatus.OK, user);
+        return;
+      }
+
+      const createdCount = await StoryService.countUserStories(user.id);
+      let likedCount: number | undefined = undefined;
+      let commentedCount: number | undefined = undefined;
+
+      const isOwner = loggedInUser?.id === user.id;
+      const isAdmin = loggedInUser?.role === 1;
+
+      if (loggedInUser) {
+        likedCount = await LikeService.countUserLikes(user.id);
+      }
+      if (isOwner || isAdmin) {
+        commentedCount = await CommentService.countUserComments(user.id);
+      }
+
+      ResponseModel.send(res, HttpStatus.OK, {
+        ...user,
+        createdCount,
+        ...(likedCount !== undefined && { likedCount }),
+        ...(commentedCount !== undefined && { commentedCount }),
+      });
     } catch (error) {
       next(error);
     }
