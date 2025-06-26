@@ -1,4 +1,4 @@
-export function up(knex) {
+exports.up = function (knex) {
   return knex.schema.createTable('stories', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.string('title').notNullable();
@@ -14,8 +14,8 @@ export function up(knex) {
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
-}
+};
 
-export function down(knex) {
+exports.down = function (knex) {
   return knex.schema.dropTable('stories');
-}
+};

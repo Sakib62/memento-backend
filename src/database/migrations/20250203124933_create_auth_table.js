@@ -1,4 +1,4 @@
-export function up(knex) {
+exports.up = function (knex) {
   return knex.schema.createTable('auth', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table
@@ -9,8 +9,8 @@ export function up(knex) {
       .onUpdate('CASCADE');
     table.string('password').notNullable();
   });
-}
+};
 
-export function down(knex) {
+exports.down = function (knex) {
   return knex.schema.dropTable('auth');
-}
+};

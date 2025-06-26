@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function (knex) {
   await knex.schema.createTable('likes', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('userId').notNullable();
@@ -19,8 +19,8 @@ export async function up(knex) {
 
     table.unique(['userId', 'storyId']);
   });
-}
+};
 
-export async function down(knex) {
+exports.down = async function (knex) {
   await knex.schema.dropTableIfExists('likes');
-}
+};

@@ -30,7 +30,7 @@ export default [
     },
   },
   {
-    ignores: ["node_modules/", "dist/", "build/", "coverage/", "*.min.js", "*.bundle.js", ".env", "package-lock.json", "pnpm-lock.yaml", "yarn.lock", ".prettierignore", ".prettierrc", "tsconfig.json", "eslint.config.mjs", "nodemon.json"]
+    ignores: ["node_modules/", "dist/", "build/", "coverage/", "*.min.js", "*.bundle.js", ".env", "package-lock.json", "pnpm-lock.yaml", "yarn.lock", ".prettierignore", ".prettierrc", "tsconfig.json", "eslint.config.mjs", "nodemon.json", "knexfile.js", "src/database/migrations/"]
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
